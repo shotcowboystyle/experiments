@@ -1,0 +1,10 @@
+# Toolchain for this repo, local and CI. https://mise.jdx.dev
+# Versions are exact so local and CI (jdx/mise-action) resolve the same binaries.
+# Keep `pnpm` in sync with package.json#packageManager.
+[tools]
+node = '26.5.0'
+pnpm = '12.5.1'
+actionlint = '1.7.12'
+shellcheck = '0.11.0' # actionlint shells out to it for `run:` blocks
+yamllint = '1.38.0'
+betterleaks = '1.8.1'

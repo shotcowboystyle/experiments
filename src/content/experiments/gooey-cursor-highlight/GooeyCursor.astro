@@ -1,0 +1,301 @@
+---
+/* A hover-only effect: touch and reduced-motion users get the static dark
+   stage with the four controls and never see the cursor layers. */
+---
+
+<div class="demo gch" data-gch data-testid="gooey-cursor-highlight-demo">
+  {/* Both cursor layers sit under the content, so a highlighted control
+      draws its (darkened) text over the white highlighter. The dot has its
+      own layer: inside the goo filter its black would blur into the blob. */}
+  <div class="gch-goo" aria-hidden="true">
+    <span class="gch-blob" data-gch-blob></span>
+    <span class="gch-trail" data-gch-trail></span>
+  </div>
+  <span class="gch-dot" data-gch-dot aria-hidden="true"></span>
+
+  <div class="gch-grid">
+    <h2 class="gch-heading" data-gch-target>Gooey cursor highlight</h2>
+    <button class="gch-btn" type="button" data-gch-target>A button</button>
+    <div class="gch-btn" data-gch-target>Looks like a button</div>
+    <a class="gch-link" href="#gooey-cursor-highlight" data-gch-target>A link</a>
+    <span class="gch-span" data-gch-target>A span</span>
+  </div>
+
+  {/* Goo: blur the layer, then push the alpha contrast so the blurred halo
+      snaps back to a hard edge. Two shapes close together read as one. */}
+  <svg class="gch-filter" aria-hidden="true" width="0" height="0" focusable="false">
+    <filter id="gch-goo">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="12" result="blur"></feGaussianBlur>
+      <feColorMatrix
+        in="blur"
+        values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 20 -9"
+        result="goo"></feColorMatrix>
+      <feComposite in="SourceGraphic" in2="goo" operator="atop"></feComposite>
+    </filter>
+  </svg>
+</div>
+
+<script>
+  import { gsap } from "gsap";
+
+  /** Resting diameter of the highlighter. */
+  const BLOB = 48;
+  /** White margin around a highlighted control. */
+  const PAD = 6;
+
+  /** A quickTo pair, so every move re-targets instead of stacking animations. */
+  const follow = (el: HTMLElement, duration: number) => {
+    const x = gsap.quickTo(el, "x", { duration, ease: "power3" });
+    const y = gsap.quickTo(el, "y", { duration, ease: "power3" });
+    return (px: number, py: number) => {
+      x(px);
+      y(py);
+    };
+  };
+
+  for (const root of document.querySelectorAll<HTMLElement>("[data-gch]")) {
+    const blob = root.querySelector<HTMLElement>("[data-gch-blob]");
+    const trail = root.querySelector<HTMLElement>("[data-gch-trail]");
+    const dot = root.querySelector<HTMLElement>("[data-gch-dot]");
+    if (!blob || !trail || !dot) {
+      throw new Error("Gooey cursor markup is missing a cursor layer");
+    }
+    const layers = [blob, trail, dot];
+
+    gsap.matchMedia().add(
+      "(hover: hover) and (prefers-reduced-motion: no-preference)",
+      () => {
+        const listeners = new AbortController();
+        const { signal } = listeners;
+
+        const ctx = gsap.context(() => {
+          gsap.set(layers, { autoAlpha: 0, xPercent: -50, yPercent: -50 });
+
+          // Three lags: the dot is nearly glued to the pointer, the blob
+          // trails it, and the trail trails the blob, so a move pulls the
+          // goo into a drop that pours back together on stop.
+          const moveDot = follow(dot, 0.1);
+          const moveBlob = follow(blob, 0.35);
+          const moveTrail = follow(trail, 0.5);
+
+          let target: HTMLElement | null = null;
+
+          const local = (e: PointerEvent) => {
+            const r = root.getBoundingClientRect();
+            return [e.clientX - r.left, e.clientY - r.top] as const;
+          };
+
+          root.addEventListener(
+            "pointermove",
+            (e) => {
+              const [x, y] = local(e);
+              moveDot(x, y);
+              // Stuck to a control: the blob stays put, only the dot roams.
+              if (!target) {
+                moveBlob(x, y);
+                moveTrail(x, y);
+              }
+            },
+            { signal },
+          );
+
+          root.addEventListener(
+            "pointerenter",
+            (e) => {
+              const [x, y] = local(e);
+              gsap.set(layers, { x, y });
+              gsap.to(layers, { autoAlpha: 1, duration: 0.2, overwrite: "auto" });
+            },
+            { signal },
+          );
+
+          root.addEventListener(
+            "pointerleave",
+            () => gsap.to(layers, { autoAlpha: 0, duration: 0.2, overwrite: "auto" }),
+            { signal },
+          );
+
+          root.addEventListener(
+            "pointerover",
+            (e) => {
+              const el = (e.target as Element).closest<HTMLElement>("[data-gch-target]");
+              if (!el || el === target) {
+                return;
+              }
+              target = el;
+              el.dataset.lit = "";
+              const r = el.getBoundingClientRect();
+              const s = root.getBoundingClientRect();
+              const x = r.left - s.left + r.width / 2;
+              const y = r.top - s.top + r.height / 2;
+              // Position goes through the same quickTo pair as the pointer
+              // follow, so neither kills the other. The trail lands inside
+              // the blob, where the goo swallows it.
+              moveBlob(x, y);
+              moveTrail(x, y);
+              gsap.to(blob, {
+                // oxlint-disable-next-line unicorn/prefer-number-coercion -- "8px", Number() gives NaN
+                borderRadius: Number.parseFloat(getComputedStyle(el).borderRadius) + PAD,
+                duration: 0.4,
+                ease: "power3.out",
+                height: r.height + PAD * 2,
+                overwrite: "auto",
+                width: r.width + PAD * 2,
+              });
+            },
+            { signal },
+          );
+
+          root.addEventListener(
+            "pointerout",
+            (e) => {
+              const el = (e.target as Element).closest<HTMLElement>("[data-gch-target]");
+              if (!el || el !== target || el.contains(e.relatedTarget as Node | null)) {
+                return;
+              }
+              delete el.dataset.lit;
+              target = null;
+              // Position resumes through the quickTo pair on the next move.
+              gsap.to(blob, {
+                borderRadius: BLOB / 2,
+                duration: 0.6,
+                ease: "elastic.out(1, 0.6)",
+                height: BLOB,
+                overwrite: "auto",
+                width: BLOB,
+              });
+            },
+            { signal },
+          );
+        }, root);
+
+        return () => {
+          listeners.abort();
+          ctx.revert();
+        };
+      },
+    );
+  }
+</script>
+
+<style>
+  .gch {
+    --gch-ink: oklch(0.96 0 0);
+    --gch-bg: oklch(0.16 0 0);
+    /* A white highlighter needs a dark stage, so the scheme is forced here. */
+    color-scheme: dark;
+    isolation: isolate;
+    background: var(--gch-bg);
+    color: var(--gch-ink);
+    /* The native pointer stays on top: never `cursor: none`. */
+  }
+
+  .gch-goo {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    /* ponytail: the blur runs over the whole stage each frame. If Safari
+       stutters, shrink this layer to a tracked box around the shapes, or drop
+       the trail and the filter for a velocity scaleX stretch on the blob. */
+    filter: url("#gch-goo");
+    pointer-events: none;
+  }
+
+  .gch-blob,
+  .gch-trail,
+  .gch-dot {
+    position: absolute;
+    top: 0;
+    left: 0;
+    border-radius: 50%;
+    pointer-events: none;
+    will-change: transform;
+  }
+
+  .gch-blob,
+  .gch-trail {
+    background: #fff;
+  }
+
+  .gch-blob {
+    width: 48px;
+    height: 48px;
+  }
+
+  .gch-trail {
+    width: 28px;
+    height: 28px;
+  }
+
+  .gch-dot {
+    z-index: 0;
+    width: 8px;
+    height: 8px;
+    background: #000;
+  }
+
+  .gch-filter {
+    position: absolute;
+  }
+
+  .gch-grid {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, auto));
+    gap: var(--s-space-6) var(--s-space-10);
+    place-items: center;
+  }
+
+  .gch-heading {
+    grid-column: 1 / -1;
+    margin: 0;
+    font-weight: 700;
+    font-size: 1.75rem;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+    text-align: center;
+  }
+
+  /* Only the color flips when lit: the white fill is the highlighter under it. */
+  [data-gch-target] {
+    transition:
+      color 200ms var(--s-ease-out),
+      border-color 200ms var(--s-ease-out);
+  }
+
+  [data-gch-target][data-lit] {
+    color: var(--gch-bg);
+  }
+
+  .gch-btn {
+    padding: var(--s-space-2) var(--s-space-4);
+    border: 1px solid currentcolor;
+    border-radius: var(--s-radius-lg);
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    cursor: pointer;
+    user-select: none;
+  }
+
+  .gch-btn[data-lit] {
+    /* The highlighter is the fill now; a dark border would just outline it. */
+    border-color: transparent;
+  }
+
+  .gch-btn:focus-visible {
+    outline: 2px solid var(--s-focus-ring);
+    outline-offset: 2px;
+  }
+
+  .gch-link {
+    color: inherit;
+    text-decoration: underline;
+    text-underline-offset: 0.2em;
+  }
+
+  .gch-span {
+    padding-inline: 0.1em;
+  }
+</style>

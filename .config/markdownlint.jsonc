@@ -1,0 +1,18 @@
+// markdownlint-cli2 config. Run: pnpm run lint:md (add --fix to autofix)
+{
+  "config": {
+    "default": true,
+    // Prose wraps are the author's call; long URLs and tables break this rule.
+    "MD013": false,
+    // Duplicate headings are fine under different parents (changelogs, docs).
+    "MD024": { "siblings_only": true },
+    // Content pages start with frontmatter + an H2, not always a single H1.
+    "MD041": false,
+    // Astro/MDX content embeds raw HTML on purpose.
+    "MD033": false,
+    // Bold footers/captions are emphasis, not headings.
+    "MD036": false,
+  },
+  "globs": ["**/*.md"],
+  "ignores": [".agents", ".claude/skills", "node_modules", ".fallow", "dist", ".astro", "src/content"],
+}

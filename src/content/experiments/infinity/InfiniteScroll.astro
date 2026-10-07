@@ -1,0 +1,321 @@
+---
+import Pause from "@lucide/astro/icons/pause";
+import Play from "@lucide/astro/icons/play";
+
+import FoldedRibbon from "./backgrounds/FoldedRibbon.astro";
+import PleatedDiagonal from "./backgrounds/PleatedDiagonal.astro";
+import Seigaiha from "./backgrounds/Seigaiha.astro";
+import TumblingBlocks from "./backgrounds/TumblingBlocks.astro";
+import LemonadeCandyStripe from "./backgrounds/LemonadeCandyStripe.astro";
+import ZiggyZag from "./backgrounds/ZiggyZag.astro";
+import WavyScallops from "./backgrounds/WavyScallops.astro";
+
+/* `tile` is each pattern's vertical repeat in px. Scrolling exactly one tile
+   per loop makes the wrap seamless; the duration keeps speed constant. */
+const backgrounds = [
+  { Component: Seigaiha, id: "seigaiha", label: "Seigaiha", tile: 100 },
+  { Component: FoldedRibbon, id: "folded-ribbon", label: "Ribbon", tile: 168 },
+  {
+    Component: TumblingBlocks,
+    id: "tumbling-blocks",
+    label: "Blocks",
+    tile: 64,
+  },
+  {
+    Component: LemonadeCandyStripe,
+    id: "lemonade-candy-stripe",
+    label: "Candy Stripe",
+    tile: 64,
+  },
+  {
+    Component: ZiggyZag,
+    id: "ziggy-zag",
+    label: "Ziggy Zag",
+    tile: 120,
+  },
+  {
+    Component: WavyScallops,
+    id: "wavy-scallops",
+    label: "Scallops",
+    tile: 130 * Math.SQRT2,
+  },
+  // 130px stripes at 135deg repeat every 130·√2 px vertically.
+  {
+    Component: PleatedDiagonal,
+    id: "pleated-diagonal",
+    label: "Pleats",
+    tile: 130 * Math.SQRT2,
+  },
+];
+const PX_PER_SECOND = 160;
+---
+
+<div class="demo infinity" data-testid="infinity-demo">
+  {backgrounds.map(({ id, Component, tile }) => (
+    <div
+      class="scroller"
+      data-bg={id}
+      data-tile={tile}
+      style={`--tile: ${tile}px; --duration: ${tile / PX_PER_SECOND}s`}
+    >
+      <Component />
+    </div>
+  ))}
+
+  <div class="controls">
+    <fieldset class="pills">
+      <legend class="visually-hidden">Background</legend>
+      {backgrounds.map(({ id, label }, i) => (
+        <label class="pill">
+          <input type="radio" name="infinity-bg" value={id} checked={i === 0} />
+          {label}
+        </label>
+      ))}
+    </fieldset>
+    <button class="toggle" type="button">
+      <span class="icons" aria-hidden="true">
+        <Pause class="icon icon-pause" size={16} />
+        <Play class="icon icon-play" size={16} />
+      </span>
+      <span class="when-playing visually-hidden">Pause</span>
+      <span class="when-paused visually-hidden">Play</span>
+    </button>
+  </div>
+</div>
+
+<script>
+  for (const demo of document.querySelectorAll<HTMLElement>(".infinity")) {
+    const scrollers = [...demo.querySelectorAll<HTMLElement>(".scroller")];
+    let offset = 0;
+
+    // User scrolling rides on top of the CSS animation as a second offset,
+    // wrapped into [-tile, 0) so the layer never runs out of pattern.
+    const move = (dy: number) => {
+      offset += dy;
+      for (const scroller of scrollers) {
+        const tile = Number(scroller.dataset.tile);
+        const wrapped = (((offset % tile) + tile) % tile) - tile;
+        scroller.style.setProperty("--offset", `${wrapped}px`);
+      }
+    };
+
+    if (matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      demo.dataset.paused = "";
+    }
+    demo.querySelector(".toggle")?.addEventListener("click", () => {
+      demo.toggleAttribute("data-paused");
+    });
+
+    demo.addEventListener(
+      "wheel",
+      (event) => {
+        event.preventDefault();
+        // Line-based wheels (Firefox) report rows, not pixels.
+        move(-event.deltaY * (event.deltaMode === 1 ? 16 : 1));
+      },
+      { passive: false },
+    );
+
+    // Mouse drag and touch both come through pointer events.
+    let lastY: number | null = null;
+    demo.addEventListener("pointerdown", (event) => {
+      if ((event.target as Element).closest(".controls")) {
+        return;
+      }
+      lastY = event.clientY;
+      demo.setPointerCapture(event.pointerId);
+    });
+    demo.addEventListener("pointermove", (event) => {
+      if (lastY === null) {
+        return;
+      }
+      move(event.clientY - lastY);
+      lastY = event.clientY;
+    });
+    const endDrag = () => {
+      lastY = null;
+    };
+    demo.addEventListener("pointerup", endDrag);
+    demo.addEventListener("pointercancel", endDrag);
+  }
+</script>
+
+<style>
+  .infinity {
+    align-content: end;
+    /* Pattern colours are fixed, so the controls are too. */
+    color-scheme: dark;
+    cursor: grab;
+    /* Vertical swipes scroll the pattern, not the page. */
+    touch-action: pinch-zoom;
+    user-select: none;
+
+    &:active {
+      cursor: grabbing;
+    }
+  }
+
+  /* The animation slides up one tile and snaps back; user scrolling adds up
+     to one more tile via `--offset`, so the layer is two tiles taller. */
+  .scroller {
+    position: absolute;
+    inset: 0 0 auto;
+    display: none;
+    height: calc(100% + var(--tile) * 2);
+    transform: translateY(var(--offset, 0px));
+    animation: scroll var(--duration) linear infinite;
+  }
+
+  .infinity:has([value="seigaiha"]:checked) [data-bg="seigaiha"],
+  .infinity:has([value="folded-ribbon"]:checked) [data-bg="folded-ribbon"],
+  .infinity:has([value="tumbling-blocks"]:checked) [data-bg="tumbling-blocks"],
+  .infinity:has([value="lemonade-candy-stripe"]:checked)
+    [data-bg="lemonade-candy-stripe"],
+  .infinity:has([value="ziggy-zag"]:checked) [data-bg="ziggy-zag"],
+  .infinity:has([value="wavy-scallops"]:checked) [data-bg="wavy-scallops"],
+  .infinity:has([value="pleated-diagonal"]:checked)
+    [data-bg="pleated-diagonal"] {
+    display: block;
+  }
+
+  @keyframes scroll {
+    to {
+      translate: 0 calc(var(--tile) * -1);
+    }
+  }
+
+  .infinity[data-paused] .scroller {
+    animation-play-state: paused;
+  }
+
+  .infinity:not([data-paused]) .when-paused,
+  .infinity[data-paused] .when-playing {
+    display: none;
+  }
+
+  .controls {
+    position: relative;
+    display: flex;
+    gap: 0.25rem;
+    padding: 0.25rem;
+    border: 1px solid rgb(255 255 255 / 0.15);
+    /* Half a row's height: a pill on one row, a rounded card when wrapped. */
+    border-radius: 1.25rem;
+    background: rgb(0 0 0 / 0.55);
+    backdrop-filter: blur(12px);
+    cursor: auto;
+  }
+
+  .pills {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 0.25rem;
+    min-inline-size: 0;
+    margin: 0;
+    padding: 0;
+    border: 0;
+  }
+
+  .toggle {
+    display: grid;
+    place-items: center;
+    align-self: center;
+    padding: 0.375rem 0.625rem;
+    border: 0;
+    border-radius: 999px;
+    background: rgb(255 255 255 / 0.12);
+    color: #fff;
+    cursor: pointer;
+    transition:
+      background-color 150ms ease-out,
+      scale 150ms ease-out;
+
+    @media (hover: hover) {
+      &:hover {
+        background: rgb(255 255 255 / 0.2);
+      }
+    }
+
+    &:active {
+      scale: 0.96;
+    }
+
+    &:focus-visible {
+      outline: 2px solid #fff;
+      outline-offset: 2px;
+    }
+  }
+
+  /* Both icons stay in the DOM, stacked, and cross-fade. */
+  .icons {
+    display: grid;
+  }
+
+  .icon {
+    grid-area: 1 / 1;
+    transition-property: opacity, filter, scale;
+    transition-duration: 300ms;
+    transition-timing-function: cubic-bezier(0.2, 0, 0, 1);
+  }
+
+  /* The triangle's mass sits left of its box; nudge it to look centred. */
+  .icon-play {
+    translate: 1px 0;
+  }
+
+  .infinity[data-paused] .icon-pause,
+  .infinity:not([data-paused]) .icon-play {
+    opacity: 0;
+    filter: blur(4px);
+    scale: 0.25;
+  }
+
+  .pill {
+    padding: 0.375rem 0.875rem;
+    border-radius: 999px;
+    color: rgb(255 255 255 / 0.7);
+    font-size: 0.8125rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition:
+      background-color 150ms ease-out,
+      color 150ms ease-out,
+      scale 150ms ease-out;
+
+    @media (hover: hover) {
+      &:hover {
+        color: #fff;
+      }
+    }
+
+    &:active {
+      scale: 0.96;
+    }
+
+    &:has(:checked) {
+      background: #fff;
+      color: #000;
+    }
+
+    &:has(:focus-visible) {
+      outline: 2px solid #fff;
+      outline-offset: 2px;
+    }
+
+    & input {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+    }
+  }
+
+  .visually-hidden {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+</style>

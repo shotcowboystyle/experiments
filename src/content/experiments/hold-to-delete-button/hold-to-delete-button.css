@@ -1,0 +1,88 @@
+/* Imported from a React island, outside any Astro scope, so it is styled from
+   this global file with a `hold-delete-` prefix. */
+
+.hold-delete {
+  /* One tone drives the tint, outline and fill, so the success swap is a
+     single variable. */
+  --hold-tone: var(--s-state-danger);
+
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 12rem;
+  height: var(--s-space-12);
+  padding-inline: var(--s-space-5);
+  overflow: clip;
+  border-radius: var(--s-radius-full);
+  /* The outline is an inset shadow so it sits under the clipped fill rather
+     than around it. */
+  background: color-mix(in oklch, var(--hold-tone) 10%, transparent);
+  box-shadow:
+    inset 0 0 0 1px color-mix(in oklch, var(--hold-tone) 40%, transparent),
+    var(--s-shadow-sm);
+  color: var(--hold-tone);
+  font-weight: var(--s-font-medium);
+  cursor: pointer;
+  /* No scroll or long-press menu stealing the hold on touch. */
+  touch-action: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+  transition-property: background-color, color, box-shadow;
+  transition-duration: var(--s-duration-150);
+  transition-timing-function: var(--s-ease-out);
+
+  &[data-state='done'] {
+    --hold-tone: var(--s-state-success);
+  }
+
+  &:focus-visible {
+    outline: 2px solid color-mix(in oklch, var(--hold-tone) 50%, transparent);
+    outline-offset: 2px;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+  }
+}
+
+.hold-delete-layer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--s-space-2);
+}
+
+.hold-delete-fill {
+  position: absolute;
+  inset: 0;
+  background: var(--hold-tone);
+  color: var(--s-text-inverse);
+}
+
+.hold-delete-icon {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+
+/* All three labels share one cell, so the button is as wide as the longest
+   and never jumps when the text swaps. */
+.hold-delete-labels {
+  display: grid;
+  font-size: var(--s-text-sm);
+  line-height: 1;
+  white-space: nowrap;
+
+  & > span {
+    grid-area: 1 / 1;
+    opacity: 0;
+  }
+}
+
+.hold-delete[data-state='idle'] [data-for='idle'],
+.hold-delete[data-state='holding'] [data-for='holding'],
+.hold-delete[data-state='done'] [data-for='done'] {
+  opacity: 1;
+}

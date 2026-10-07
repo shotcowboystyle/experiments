@@ -1,0 +1,41 @@
+pre-commit:
+  jobs:
+    - name: ultracite
+      run: pnpm dlx ultracite fix
+      glob:
+        - '**/*.js'
+        - '**/*.jsx'
+        - '**/*.ts'
+        - '**/*.tsx'
+        - '**/*.json'
+        - '**/*.jsonc'
+        - '**/*.css'
+      stage_fixed: true
+
+    # Check-only: markdownlint-cli2 always lints its configured globs, so an
+    # autofix here would also rewrite files the commit never staged.
+    # Run `pnpm run lint:md:fix` to fix.
+    - name: markdownlint
+      run: pnpm run lint:md
+      glob: '**/*.md'
+
+    - name: yamllint
+      run: pnpm run lint:yaml
+      glob:
+        - '**/*.yml'
+        - '**/*.yaml'
+
+    - name: actionlint
+      run: pnpm run lint:actions
+      glob: '.github/workflows/*.{yml,yaml}'
+
+    - name: cspell
+      run: pnpm exec cspell --config .config/cspell.json --no-progress --no-must-find-files {staged_files}
+
+    - name: betterleaks
+      run: mise exec -- betterleaks git --pre-commit --staged
+
+commit-msg:
+  jobs:
+    - name: commitlint
+      run: pnpm exec commitlint --config .config/commitlint.config.ts --edit {1}

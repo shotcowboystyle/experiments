@@ -1,0 +1,16 @@
+---
+title: Morph Surface
+description: A small "Ask AI" pill that grows into a prompt panel and folds back down when you're done.
+pubDate: 2026-10-04
+demo: ./MorphSurfaceBlock.astro
+---
+
+A dock-sized pill with a little [Siri orb](/siri-orb/) and an "Ask AI" button. Click it and the pill grows upward into a panel with a text box, the orb fading back in at the panel's corner. Press ⌘ Enter (or Ctrl Enter) or the shortcut button to send, and the panel folds back into the pill, where the orb pulses once to confirm. Escape or a click anywhere else closes it without sending.
+
+## How it works
+
+There is only one surface. Its width, height and corner radius spring between the pill and the panel, with the width going from `auto` to the full panel width, so the pill can be as wide as its label. Closing waits 80ms before the shape starts collapsing, which gives the panel content time to fade first.
+
+The panel inside is always full size and pinned to the bottom of the surface, so its content never reflows while the shape changes. The surface simply clips it, revealing it from the dock upward. Its width comes from a container query unit on the reserved outer box, so it matches the open surface exactly and still fits a narrow screen.
+
+Focus follows the panel. The text box takes focus as the panel opens. Escape or sending hands focus back to the "Ask AI" button, while a click outside leaves focus where you clicked. Whichever half is hidden is made `inert`, so Tab never lands on it, and a polite live region announces "Sent". With reduced motion the shape changes instantly.

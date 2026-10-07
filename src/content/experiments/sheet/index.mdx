@@ -1,0 +1,10 @@
+---
+title: Bottom Sheet
+description: Bottom sheet that resizes as you move between stages
+pubDate: 2026-09-15
+demo: ./SheetBlock.astro
+---
+
+A wallet sheet built on Vaul. It opens on a short options menu, and from there the recovery phrase, private key or remove step each grow or shrink the sheet to fit. Drag down to dismiss.
+
+Each stage hard-codes its height, 290px for the menu and 465 for the recovery phrase. Animating to a height measured after render jumps on the first frame: the sheet has to be wrong once before it can know what is right.

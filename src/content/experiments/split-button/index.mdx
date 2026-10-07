@@ -1,0 +1,14 @@
+---
+title: Split Button
+description: A pill button that springs open into a row of choices.
+pubDate: 2026-10-04
+demo: ./SplitButtonBlock.astro
+---
+
+A single Share pill. Press it and the pill widens into a back arrow and a row of choices; pick one, press back, or hit Escape and it springs shut again. Focus follows the swap, so a keyboard user lands on the back arrow when it opens and on the trigger when it closes.
+
+## How it works
+
+The trigger and the choices are never on screen together. The content swaps instantly, and a `ResizeObserver` reads its new width, which the outer surface springs to (stiffness 260, damping 48). While the spring runs the surface clips its overflow so the wider content can't flash a scrollbar; once it settles, overflow scrolls again for rows wider than the page.
+
+The outline is an inset shadow rather than a border, so it adds nothing to the width being measured. Reduced motion skips the spring and snaps to size.

@@ -1,0 +1,14 @@
+---
+title: Carousel
+description: A drag-to-swipe carousel whose cards swing in 3D as they pass.
+pubDate: 2026-09-15
+demo: ./CarouselBlock.astro
+---
+
+Drag a card sideways, or tap a dot, and the track springs to the next slide. Each card rotates on its Y axis as it leaves and arrives, so the row reads as a turning drum instead of a flat strip. Use the props panel to try autoplay, looping and a round variant.
+
+## How it works
+
+The track's `x` is a single motion value. Every card maps its own distance from the viewport through `useTransform` to a `rotateY` between 90° and -90°, so the swing is derived from the position rather than animated separately. A release past a velocity threshold advances one slide, and a spring (stiffness 300, damping 30) settles it.
+
+Looping pads the list with a clone of the last item at the front and the first at the back. When the spring lands on a clone, the track jumps to the real slide with a zero-duration transition, and the seam is invisible.

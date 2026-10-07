@@ -1,0 +1,29 @@
+---
+/**
+ * Loading spinner. Inherits color and scales with font-size unless `size` is set.
+ *
+ * @example
+ * <Spinner />
+ * <Spinner size="lg" label="Loading results" />
+ */
+import "./spinner.css";
+
+import type { HTMLAttributes } from "astro/types";
+
+import type { SpinnerSize } from "./types";
+
+interface Props extends HTMLAttributes<"span"> {
+  size?: SpinnerSize;
+  /** Accessible label announced to screen readers. */
+  label?: string;
+}
+
+const { size, label = "Loading", class: className, ...rest } = Astro.props;
+---
+
+<span
+  class:list={["ui-spinner", className]}
+  data-size={size}
+  role="status"
+  aria-label={label}
+  {...rest}></span>

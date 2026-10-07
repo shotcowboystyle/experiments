@@ -1,0 +1,113 @@
+/* Imported from a React island, outside any Astro scope, so it is styled from
+   this global file with a `stats-widget-` prefix. */
+
+.stats-widget {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: var(--s-space-52);
+  height: var(--s-space-52);
+}
+
+.stats-widget-stack {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: var(--s-space-64);
+  height: var(--s-space-72);
+  transform-origin: center;
+  scale: 0.72;
+}
+
+.stats-widget-card,
+.stats-widget-shelf {
+  background: var(--s-surface-base);
+  color: var(--s-text-primary);
+}
+
+.stats-widget-card {
+  z-index: 20;
+  display: flex;
+  width: var(--s-space-72);
+  height: var(--s-space-64);
+  overflow: clip;
+  padding: var(--s-space-6) var(--s-space-6) 0;
+  border-radius: 35px;
+  box-shadow: 0 0 10px 1px var(--s-neutral-300);
+}
+
+.stats-widget-slide {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.stats-widget-content {
+  width: var(--s-space-56);
+  height: var(--s-space-56);
+  background: var(--s-surface-base);
+}
+
+.stats-widget-value,
+.stats-widget-change,
+.stats-widget-label {
+  margin: 0;
+  font-weight: var(--s-font-bold);
+}
+
+.stats-widget-value {
+  margin-bottom: var(--s-space-3);
+  /* Shift's scale tops out at 5xl; this is the 6xl step it skips. */
+  font-size: 3.75rem;
+  line-height: 1;
+}
+
+.stats-widget-change {
+  font-size: var(--s-text-2xl);
+  line-height: var(--s-space-8);
+  color: var(--s-state-success);
+
+  &[data-negative] {
+    color: var(--s-state-danger);
+  }
+}
+
+.stats-widget-label {
+  margin-top: var(--s-space-14);
+  margin-bottom: var(--s-space-2);
+  font-size: var(--s-text-4xl);
+  line-height: var(--s-space-10);
+  color: var(--s-text-tertiary);
+}
+
+.stats-widget-dots {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: var(--s-space-10);
+  height: 100%;
+  margin-block: calc(var(--s-space-2) * -1);
+}
+
+.stats-widget-dot {
+  width: var(--s-space-2);
+  height: var(--s-space-2);
+  margin-block: var(--s-space-1);
+  border-radius: var(--s-radius-full);
+  background: var(--s-text-tertiary);
+
+  &[data-active] {
+    background: var(--s-text-primary);
+  }
+}
+
+.stats-widget-shelf {
+  z-index: 10;
+  width: 270px;
+  height: var(--s-space-10);
+  margin-top: calc(var(--s-space-8) * -1);
+  border-radius: 0 0 35px 35px;
+  box-shadow: 0 0 5px 1px var(--s-neutral-300);
+}

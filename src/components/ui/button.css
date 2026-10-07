@@ -1,0 +1,9 @@
+/* Shift presses [s-btn] to 0.98; 0.96 matches the rest of the UI. Unlayered,
+   so it wins over Shift's `shift.core` layer regardless of load order. */
+[s-btn]:active:not(:disabled, [data-static]) {
+  transform: scale(0.96);
+}
+
+[s-btn][data-static]:active {
+  transform: none;
+}

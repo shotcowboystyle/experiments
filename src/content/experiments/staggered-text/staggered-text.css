@@ -1,0 +1,36 @@
+/* Imported from a React island, outside any Astro scope, so it is styled from
+   this global file with a `staggered-text-` prefix. */
+
+.staggered-text {
+  margin: 0;
+  letter-spacing: var(--s-tracking-wide);
+}
+
+.staggered-text-word {
+  white-space: nowrap;
+}
+
+/* Each letter is its own one-line window. `clip-path` rather than `overflow`
+   so the box keeps its text baseline and sits in line with its neighbours. */
+.staggered-text-letter {
+  display: inline-block;
+  clip-path: inset(0);
+}
+
+.staggered-text-roll {
+  position: relative;
+  display: block;
+}
+
+/* The copy waits one line below and rolls up as the original rolls out. Only
+   the original is selectable, so a copied selection reads as the text once. */
+.staggered-text-copy {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  user-select: none;
+}
+
+.staggered-text [s-sr-only] {
+  user-select: none;
+}

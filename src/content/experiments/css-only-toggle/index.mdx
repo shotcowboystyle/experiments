@@ -1,0 +1,12 @@
+---
+title: CSS-Only Toggle
+description: A theme toggle with zero JavaScript.
+pubDate: 2026-09-15
+demo: ./Toggle.astro
+---
+
+Modern CSS can do a lot without JavaScript. `light-dark()`, `:has()`, and a checkbox go a long way.
+
+## How it works
+
+The panel sets `color-scheme` from `:has(input:checked)`, and every color uses `light-dark()`, so it flips with the checkbox.

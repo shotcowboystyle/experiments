@@ -1,0 +1,88 @@
+---
+import leftHandBottom from "./assets/images/hand-sex-bottom.png";
+import rightHand from "./assets/images/hand-sex-middle.png";
+import leftHandTop from "./assets/images/hand-sex-top.png";
+import ResizerContainer from "./ResizerContainer.astro";
+import { Image } from "astro:assets";
+---
+
+<div class="demo" data-testid="immature-responsive-design-demo">
+  <ResizerContainer label="Drag">
+    <div class="stage">
+      <div class="hand hand-bottom">
+        <Image src={leftHandBottom} alt="outer stacked image of a left hand" />
+      </div>
+      <div class="hand hand-middle">
+        <Image src={rightHand} alt="image of a right hand" />
+      </div>
+      <div class="hand hand-top">
+        <Image src={leftHandTop} alt="inner stacked image of a left hand" />
+      </div>
+    </div>
+  </ResizerContainer>
+</div>
+
+<style>
+  /* The frame's light ink and mint handle are drawn for a black stage. */
+  .demo {
+    justify-items: stretch;
+    background: #000;
+  }
+
+  /* ============================================================
+  	 * Immature — one joke, told at a specific width.
+  	 *
+  	 * The page used to rotate `<main>` by -90deg on portrait phones to
+  	 * fake a landscape viewport, which clipped the heading mid-word and
+  	 * pushed the artwork and the back link off-screen. The frame now
+  	 * derives its minimum from the space it actually has, so the gag
+  	 * lands at every width and nothing is rotated.
+  	 * ============================================================ */
+
+  /* ---- The stage ----
+  	 *
+  	 * Hands are anchored to the frame's leading and trailing edges, so narrowing
+  	 * the frame is what brings them together.
+  	 *
+  	 * Sized against the viewport, deliberately not against the frame: container
+  	 * units made each hand a fixed percentage of the frame, so the gap between
+  	 * them stayed a constant fraction of the width and they could never actually
+  	 * meet however far the handle traveled.
+  	 */
+
+  .stage {
+    position: relative;
+    overflow: hidden;
+    height: clamp(14rem, 44vh, 30rem);
+    user-select: none;
+  }
+
+  .hand {
+    position: absolute;
+    top: 50%;
+  }
+
+  .hand :global(img) {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+
+  .hand-bottom {
+    left: 0;
+    width: clamp(8rem, 30vw, 30rem);
+    transform: translateY(-65%);
+  }
+
+  .hand-middle {
+    right: 0;
+    width: clamp(7.75rem, 29vw, 29rem);
+    transform: translateY(-32%);
+  }
+
+  .hand-top {
+    left: 0;
+    width: clamp(4.95rem, 18.6vw, 18.6rem);
+    transform: translateY(-46%);
+  }
+</style>

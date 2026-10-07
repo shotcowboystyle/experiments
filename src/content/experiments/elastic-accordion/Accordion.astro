@@ -1,0 +1,188 @@
+---
+import ChevronDown from "@lucide/astro/icons/chevron-down";
+
+const items = [
+  {
+    body: "A plain accordion: a separate rounded panel per question, one answer open at a time.",
+    title: "What is this?",
+  },
+  {
+    body: "Opening overshoots the full height by a few percent and settles back. Closing lands, rebounds a few pixels and settles, like a lid dropping shut.",
+    title: "Why does it bounce?",
+  },
+  {
+    body: "Yes. Every row is a native details element, so it still opens and closes, just without the motion.",
+    title: "Does it work without JavaScript?",
+  },
+  {
+    body: "The bounce goes away and panels open and close with a short, plain ease instead.",
+    title: "What about reduced motion?",
+  },
+];
+---
+
+<div class="demo" data-testid="accordion-demo">
+  <div class="accordion" data-accordion>
+    {
+      items.map((item, i) => (
+        <details open={i === 0} data-state={i === 0 ? "open" : "closed"}>
+          <summary>
+            <span>{item.title}</span>
+            <ChevronDown aria-hidden="true" size={16} />
+          </summary>
+          <p>{item.body}</p>
+        </details>
+      ))
+    }
+  </div>
+</div>
+
+<style>
+  .accordion {
+    display: grid;
+    gap: var(--s-space-2);
+    width: min(100%, 26rem);
+  }
+
+  details {
+    /* The height is what animates; clip keeps the answer inside it. */
+    overflow: clip;
+    border: 1px solid var(--s-border-default);
+    border-radius: var(--s-radius-xl);
+    background: var(--s-surface-base);
+  }
+
+  summary {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--s-space-4);
+    padding: var(--s-space-4) var(--s-space-5);
+    cursor: pointer;
+    font-weight: 500;
+    font-size: 0.9375rem;
+    list-style: none;
+
+    &::-webkit-details-marker {
+      display: none;
+    }
+
+    /* Inset and rounded, so the clipped item doesn't cut the ring off. */
+    &:focus-visible {
+      border-radius: inherit;
+      outline-offset: -2px;
+    }
+
+    & svg {
+      flex-shrink: 0;
+      color: var(--page-muted);
+      transition: rotate 300ms var(--s-ease-out);
+    }
+  }
+
+  /* `data-state` flips on click, `open` only once a close has finished, so
+     the chevron follows the intent rather than the attribute. */
+  [data-state="open"] svg {
+    rotate: 180deg;
+  }
+
+  p {
+    margin: 0;
+    padding: 0 var(--s-space-5) var(--s-space-5);
+    color: var(--page-muted);
+    font-size: 0.875rem;
+    line-height: var(--s-leading-relaxed);
+  }
+</style>
+
+<script>
+  // A damped spring (damping ratio 0.55, ~13% overshoot), sampled into a
+  // CSS `linear()` easing. Opening rides it straight; closing folds the
+  // overshoot back under the floor, so the panel lands shut and rebounds
+  // instead of overshooting into a clipped, invisible negative height.
+  const ZETA = 0.55;
+  const OMEGA = 10;
+  const SAMPLES = 40;
+  // Peak horizontal squeeze at full overshoot: the balloon gives a little
+  // width back as it stretches tall, and swells as it sags short.
+  const SQUEEZE = 0.03;
+
+  const damped = OMEGA * Math.sqrt(1 - ZETA * ZETA);
+  const spring = (t: number) =>
+    1 -
+    Math.exp(-ZETA * OMEGA * t) *
+      (Math.cos(damped * t) + (ZETA / Math.sqrt(1 - ZETA * ZETA)) * Math.sin(damped * t));
+
+  const raw = Array.from({ length: SAMPLES + 1 }, (_, i) => (i === SAMPLES ? 1 : spring(i / SAMPLES)));
+  const overshoot = Math.max(...raw) - 1;
+  const firstArrival = raw.findIndex((x) => x >= 1);
+  const toEasing = (xs: number[]) => `linear(${xs.map((x) => x.toFixed(4)).join(", ")})`;
+
+  const OPEN_EASE = toEasing(raw);
+  const CLOSE_EASE = toEasing(raw.map((x) => (x > 1 ? 2 - x : x)));
+  // Width follows how far past the target height the panel is, so it's 1 at
+  // every crossing and never jumps. Nothing squeezes on the way there.
+  const stretch = (xs: number[]) =>
+    xs.map((x, i) => ({ scale: `${i < firstArrival ? 1 : 1 - (SQUEEZE * (x - 1)) / overshoot} 1` }));
+  const OPEN_STRETCH = stretch(raw);
+  // Closing, any distance from shut is the panel bouncing back up: taller, so narrower.
+  const CLOSE_STRETCH = stretch(raw.map((x) => 1 + Math.abs(x - 1)));
+
+  const reduced = matchMedia("(prefers-reduced-motion: reduce)");
+
+  const toggle = (item: HTMLDetailsElement, open: boolean) => {
+    // Mid-flight, the rendered height is the animated one: start from there.
+    const from = item.getBoundingClientRect().height;
+    for (const animation of item.getAnimations()) {
+      animation.cancel();
+    }
+    item.dataset.state = open ? "open" : "closed";
+
+    // Measure both ends synchronously; nothing paints in between.
+    item.open = false;
+    const closed = item.getBoundingClientRect().height;
+    item.open = true;
+    const full = item.getBoundingClientRect().height;
+
+    const duration = open ? 700 : 650;
+    const animation = item.animate(
+      { height: [`${from}px`, `${open ? full : closed}px`] },
+      reduced.matches ? { duration: 200, easing: "ease-out" } : { duration, easing: open ? OPEN_EASE : CLOSE_EASE },
+    );
+    if (!reduced.matches) {
+      item.animate(open ? OPEN_STRETCH : CLOSE_STRETCH, { duration });
+    }
+    if (!open) {
+      animation.onfinish = () => (item.open = false);
+    }
+  };
+
+  for (const root of document.querySelectorAll("[data-accordion]")) {
+    const items = [...root.querySelectorAll("details")];
+
+    for (const item of items) {
+      item.querySelector("summary")?.addEventListener("click", (event) => {
+        event.preventDefault();
+        const opening = item.dataset.state !== "open";
+        if (opening) {
+          // One open at a time. Not the `name` attribute: that snaps the
+          // others shut with no animation.
+          for (const other of items) {
+            if (other !== item && other.dataset.state === "open") {
+              toggle(other, false);
+            }
+          }
+        }
+        toggle(item, opening);
+      });
+
+      // The browser can open a row by itself (find-in-page); keep the
+      // chevron honest when that happens outside an animation.
+      item.addEventListener("toggle", () => {
+        if (!item.getAnimations().length) {
+          item.dataset.state = item.open ? "open" : "closed";
+        }
+      });
+    }
+  }
+</script>

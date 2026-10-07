@@ -1,0 +1,85 @@
+---
+import { getCollection } from "astro:content";
+
+import BlockPreview from "~/components/ui/BlockPreview.astro";
+import { SITE_TITLE } from "~/consts";
+import Page from "~/layouts/Page.astro";
+import { sortByDate } from "~/lib/sort-by-date";
+import { withBase } from "~/lib/with-base";
+
+const experiments = sortByDate(await getCollection("experiments"));
+---
+
+<Page title={SITE_TITLE}>
+  <ul class="gallery" role="list">
+    {
+      experiments.map((entry) => (
+        <li>
+          <a class="tile" href={withBase(`/${entry.id}/`)}>
+            <BlockPreview slug={entry.id}>{entry.data.title}</BlockPreview>
+            <h2 class="tile-title">{entry.data.title}</h2>
+            {entry.data.description && (
+              <p class="tile-description">{entry.data.description}</p>
+            )}
+          </a>
+        </li>
+      ))
+    }
+  </ul>
+</Page>
+
+<style>
+  .gallery {
+    display: grid;
+    /* minmax(0, …) so a truncated, nowrap description can't widen the column. */
+    grid-template-columns: minmax(0, 1fr);
+    gap: var(--s-space-12);
+    margin: 0;
+    padding: 0;
+    list-style: none;
+
+    @media (width >= 48rem) {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+  }
+
+  .tile {
+    display: block;
+    border-radius: var(--s-radius-2xl);
+    color: inherit;
+    text-decoration: none;
+
+    &:focus-visible {
+      outline: 2px solid var(--s-interactive-primary);
+      outline-offset: 4px;
+    }
+  }
+
+  .tile-title {
+    margin: var(--s-space-5) 0 0;
+    color: var(--page-ink);
+    font-weight: 400;
+    font-size: 1rem;
+    line-height: 1.5rem;
+    text-decoration-line: underline;
+    text-decoration-color: transparent;
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+    transition: text-decoration-color 150ms ease-out;
+  }
+
+  /* The one hover cue: the caption underlines. The tile stays still. */
+  .tile:hover .tile-title {
+    text-decoration-color: color-mix(in oklch, currentColor 40%, transparent);
+  }
+
+  .tile-description {
+    overflow: hidden;
+    margin: 0;
+    color: var(--page-muted);
+    font-size: 1rem;
+    line-height: 1.5rem;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+</style>

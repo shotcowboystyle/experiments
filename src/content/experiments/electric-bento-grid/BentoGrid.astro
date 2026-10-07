@@ -1,0 +1,1132 @@
+---
+// const el = document.querySelector("#bgl-04a-clock");
+// if (!el) {
+//   return;
+// }
+// const tick = () => {
+//   el.textContent = new Date().toLocaleTimeString("en-US", {
+//     hour12: false,
+//     timeZone: "America/Los_Angeles",
+//   });
+// };
+// tick();
+// setInterval(tick, 1000);
+---
+
+<script is:inline>
+  // Pre-paint gate. With JavaScript, only the first grid shows until the
+  // tabs take over, and cards stay hidden until motion takes over. The
+  // recovery timer is armed first so a blocked bundle still leaves both
+  // grids readable; without JavaScript nothing is ever hidden.
+  (() => {
+    const root = document.documentElement;
+    window.__ebgBootTimer = setTimeout(() => {
+      if (root.dataset.ebgBoot === "pending") {
+        root.dataset.ebgBoot = "recovered";
+      }
+    }, 2500);
+    root.dataset.ebgMotion = matchMedia("(prefers-reduced-motion: reduce)").matches ? "reduced" : "full";
+    root.dataset.ebgBoot = "pending";
+  })();
+</script>
+
+<svg class="ebg-defs" aria-hidden="true" focusable="false" width="0" height="0">
+  <!-- Four flat inks: shadow, blaze, volt, paper. -->
+  <filter id="ebg-posterize" color-interpolation-filters="sRGB">
+    <feColorMatrix type="saturate" values="0"></feColorMatrix>
+    <feComponentTransfer>
+      <feFuncR type="discrete" tableValues="0.06 1 0.78 0.95"></feFuncR>
+      <feFuncG type="discrete" tableValues="0.05 0.31 1 0.93"></feFuncG>
+      <feFuncB type="discrete" tableValues="0.04 0.1 0.18 0.9"></feFuncB>
+    </feComponentTransfer>
+  </filter>
+</svg>
+
+<div class="bgl-04-group" data-ebg data-preview>
+  <div class="ebg-bar" hidden>
+    <div class="ebg-tabs" role="tablist" aria-label="Bento grids">
+      <button class="ebg-tab" id="ebg-tab-a" type="button" role="tab" aria-controls="ebg-panel-a" aria-selected="true">
+        01 Jordan Vale
+      </button>
+      <button class="ebg-tab" id="ebg-tab-b" type="button" role="tab" aria-controls="ebg-panel-b" aria-selected="false" tabindex="-1">
+        02 Sam Okafor
+      </button>
+    </div>
+    <button class="ebg-toggle" type="button" aria-pressed="false">
+      Pause motion
+    </button>
+  </div>
+  <section class="bgl-04a" id="ebg-panel-a" aria-labelledby="bgl-04a-h" data-ebg-panel>
+    <div class="bgl-04a__grid">
+      <article class="bgl-04a__card bgl-04a__profile" data-ebg-card>
+        <img
+          class="bgl-04a__pic"
+          src="https://picsum.photos/seed/bglface/240/240"
+          alt="Portrait of Jordan Vale"
+          width="240"
+          height="240"
+          loading="lazy"
+        />
+        <h2 class="bgl-04a__name" id="bgl-04a-h" data-ebg-letters>
+          Jordan Vale
+        </h2>
+        <p class="bgl-04a__bio">
+          Product designer &amp; frontend engineer. I design systems, then ship
+          them.
+        </p>
+      </article>
+      <article class="bgl-04a__card bgl-04a__cases" data-ebg-card>
+        <h3 class="bgl-04a__t" data-ebg-letters>
+          Selected work
+        </h3>
+        <ul class="bgl-04a__ul">
+          <li>
+            <a href="#">
+              <span class="bgl-04a__case">
+                Atlas &mdash; design system for 40 teams
+              </span>
+              <em>2025</em>
+              <b aria-hidden="true">&rarr;</b>
+            </a>
+          </li>
+          <li>
+            <a href="#">
+              <span class="bgl-04a__case">
+                Pulse &mdash; realtime analytics app
+              </span>
+              <em>2024</em>
+              <b aria-hidden="true">&rarr;</b>
+            </a>
+          </li>
+          <li>
+            <a href="#">
+              <span class="bgl-04a__case">
+                Drift &mdash; onboarding that converts 2&times;
+              </span>
+              <em>2024</em>
+              <b aria-hidden="true">&rarr;</b>
+            </a>
+          </li>
+        </ul>
+      </article>
+      <article class="bgl-04a__card bgl-04a__clockcard" data-ebg-card>
+        <p class="bgl-04a__clock" id="bgl-04a-clock">
+          09:41:00
+        </p>
+        <p class="bgl-04a__loc">San Francisco, CA &mdash; open to remote</p>
+      </article>
+      <article class="bgl-04a__card bgl-04a__social" data-ebg-card>
+        <h3 class="bgl-04a__t" data-ebg-letters>
+          Elsewhere
+        </h3>
+        <div class="bgl-04a__links">
+          <a href="#" aria-label="GitHub profile" data-ebg-cta>
+            Gh
+          </a>
+          <a href="#" aria-label="Dribbble profile" data-ebg-cta>
+            Dr
+          </a>
+          <a href="#" aria-label="LinkedIn profile" data-ebg-cta>
+            In
+          </a>
+          <a href="#" aria-label="Email me" data-ebg-cta>
+            @
+          </a>
+        </div>
+      </article>
+      <article
+        class="bgl-04a__card bgl-04a__marquee"
+        aria-label="Skills"
+        data-ebg-card
+      >
+        <div class="bgl-04a__track">
+          <span>
+            Design systems &bull; React &bull; CSS architecture &bull;
+            Prototyping &bull; Motion &bull; Accessibility &bull; Figma &bull;
+            TypeScript &bull;&nbsp;
+          </span>
+          <span aria-hidden="true">
+            Design systems &bull; React &bull; CSS architecture &bull;
+            Prototyping &bull; Motion &bull; Accessibility &bull; Figma &bull;
+            TypeScript &bull;&nbsp;
+          </span>
+        </div>
+      </article>
+    </div>
+  </section>
+  <section class="bgl-04b" id="ebg-panel-b" aria-labelledby="bgl-04b-h" data-ebg-panel>
+    <div class="bgl-04b__grid">
+      <article class="bgl-04b__card bgl-04b__intro" data-ebg-card>
+        <p class="bgl-04b__idx" data-ebg-letters>
+          01
+        </p>
+        <h2 class="bgl-04b__name" id="bgl-04b-h" data-ebg-letters>
+          SAM&nbsp;OKAFOR
+        </h2>
+        <p class="bgl-04b__role">Creative developer. Berlin. Available Q4.</p>
+      </article>
+      <article class="bgl-04b__card" data-ebg-card>
+        <p class="bgl-04b__idx" data-ebg-letters>
+          02
+        </p>
+        <a class="bgl-04b__work" href="#" data-ebg-letters>
+          KINETIC TYPE ENGINE<b aria-hidden="true">&nearr;</b>
+        </a>
+      </article>
+      <article class="bgl-04b__card" data-ebg-card>
+        <p class="bgl-04b__idx" data-ebg-letters>
+          03
+        </p>
+        <a class="bgl-04b__work" href="#" data-ebg-letters>
+          WEBGL STOREFRONT<b aria-hidden="true">&nearr;</b>
+        </a>
+      </article>
+      <article class="bgl-04b__card" data-ebg-card>
+        <p class="bgl-04b__idx" data-ebg-letters>
+          04
+        </p>
+        <a class="bgl-04b__work" href="#" data-ebg-letters>
+          GENERATIVE ID SYSTEM<b aria-hidden="true">&nearr;</b>
+        </a>
+      </article>
+      <article class="bgl-04b__card bgl-04b__contact" data-ebg-card>
+        <p class="bgl-04b__idx" data-ebg-letters>
+          05
+        </p>
+        <a class="bgl-04b__mail" href="mailto:hi@example.com" data-ebg-cta>
+          HI@SAMOKAFOR.DEV
+        </a>
+      </article>
+    </div>
+  </section>
+</div>
+
+<script>
+  import { gsap } from "gsap";
+
+  import { attachParticleEffect } from "./motion/attach";
+  import { createConductor } from "./motion/conductor";
+  import { charge, surge } from "./motion/effects";
+  import { MOTION_SPEED } from "./motion/field";
+  import { prepareHeadline } from "./motion/letters";
+
+  interface Pausable {
+    pause: () => void;
+    play: () => void;
+  }
+
+  const runAll = (fns: (() => void)[]) => {
+    for (const fn of fns.toReversed()) {
+      try {
+        fn();
+      } catch {
+        // Safe to continue: every remaining restore still has to run to reach the readable grid.
+      }
+    }
+  };
+
+  const conductor = createConductor();
+
+  /** Animates one grid; returns its pausables and a teardown that restores it. */
+  const animatePanel = (panel: HTMLElement) => {
+    const teardown: (() => void)[] = [];
+    const pausables: Pausable[] = [];
+    try {
+      const listeners = new AbortController();
+      teardown.push(() => listeners.abort());
+      const { signal } = listeners;
+      const canvasIn = (host: HTMLElement) => {
+        const canvas = document.createElement("canvas");
+        canvas.className = "ebg-canvas";
+        canvas.setAttribute("aria-hidden", "true");
+        host.append(canvas);
+        teardown.push(() => canvas.remove());
+        return canvas;
+      };
+      const perform = (el: HTMLElement, accent: () => number) => {
+        teardown.push(conductor.add(el, accent));
+      };
+
+      const entrances = new Map<Element, (delay: number) => void>();
+      for (const card of panel.querySelectorAll<HTMLElement>("[data-ebg-card]")) {
+        gsap.set(card, { autoAlpha: 0 });
+        teardown.push(() => gsap.set(card, { clearProps: "opacity,visibility" }));
+        const field = attachParticleEffect(canvasIn(card), card, surge);
+        teardown.push(field.destroy);
+        pausables.push(field);
+        perform(card, field.accent);
+        // Touching a card asks for a discharge; the conductor drops it if another accent is playing.
+        card.addEventListener("pointerenter", () => conductor.request(field.accent), { signal });
+
+        const headlines = [...card.querySelectorAll<HTMLElement>("[data-ebg-letters]")].map((el) => {
+          const headline = prepareHeadline(el);
+          teardown.push(headline.revert);
+          perform(el, headline.glitch);
+          return headline;
+        });
+        const ctas = [...card.querySelectorAll<HTMLElement>("[data-ebg-cta]")].map((cta) => {
+          const controls = attachParticleEffect(canvasIn(cta), cta, charge);
+          teardown.push(controls.destroy);
+          pausables.push(controls);
+          perform(cta, controls.accent);
+          for (const type of ["pointerenter", "focusin"]) {
+            cta.addEventListener(type, () => conductor.request(controls.accent), { signal });
+          }
+          return controls;
+        });
+        entrances.set(card, (delay) => {
+          field.enter(delay);
+          for (const [i, h] of headlines.entries()) {
+            h.scatterIn(delay + 0.3 + i * 0.12);
+          }
+          for (const [i, c] of ctas.entries()) {
+            c.enter(delay + 0.6 + i * 0.1);
+          }
+        });
+      }
+
+      // Cards power on as they scroll into view, in batches.
+      const reveal = new IntersectionObserver(
+        (entries) => {
+          for (const [i, entry] of entries.filter((e) => e.isIntersecting).entries()) {
+            reveal.unobserve(entry.target);
+            entrances.get(entry.target)?.(i * 0.12);
+          }
+        },
+        { threshold: 0.15 },
+      );
+      teardown.push(() => reveal.disconnect());
+      for (const card of entrances.keys()) {
+        reveal.observe(card);
+      }
+    } catch (error) {
+      runAll(teardown);
+      throw error;
+    }
+    return { pausables, stop: () => runAll(teardown) };
+  };
+
+  const setup = (group: HTMLElement) => {
+    const motion = document.documentElement.dataset.ebgMotion === "full";
+    const bar = group.querySelector<HTMLElement>(".ebg-bar");
+    const toggle = group.querySelector<HTMLButtonElement>(".ebg-toggle");
+    const tabs = [...group.querySelectorAll<HTMLButtonElement>("[role=tab]")];
+    const panels = [...group.querySelectorAll<HTMLElement>("[data-ebg-panel]")];
+    if (!bar || !toggle || tabs.length !== panels.length) {
+      throw new Error("Electric bento grid markup is missing its tab bar");
+    }
+    let paused = false;
+    let active: ReturnType<typeof animatePanel> | null = null;
+
+    const select = (index: number) => {
+      active?.stop();
+      active = null;
+      for (const [i, tab] of tabs.entries()) {
+        const on = i === index;
+        tab.setAttribute("aria-selected", String(on));
+        tab.tabIndex = on ? 0 : -1;
+        panels[i].hidden = !on;
+      }
+      if (motion) {
+        active = animatePanel(panels[index]);
+        if (paused) {
+          for (const p of active.pausables) {
+            p.pause();
+          }
+        }
+      }
+    };
+
+    for (const [i, panel] of panels.entries()) {
+      panel.setAttribute("role", "tabpanel");
+      panel.setAttribute("aria-labelledby", tabs[i].id);
+    }
+    for (const [i, tab] of tabs.entries()) {
+      tab.addEventListener("click", () => {
+        if (tab.getAttribute("aria-selected") !== "true") {
+          select(i);
+        }
+      });
+      tab.addEventListener("keydown", (e) => {
+        const step = { ArrowLeft: -1, ArrowRight: 1 }[e.key];
+        if (!step) {
+          return;
+        }
+        e.preventDefault();
+        const next = (i + step + tabs.length) % tabs.length;
+        tabs[next].focus();
+        select(next);
+      });
+    }
+
+    // WCAG 2.2.2: the ambient loops run forever, so they get a pause.
+    toggle.hidden = !motion;
+    toggle.addEventListener("click", () => {
+      paused = !paused;
+      toggle.setAttribute("aria-pressed", String(paused));
+      toggle.textContent = paused ? "Play motion" : "Pause motion";
+      group.toggleAttribute("data-ebg-paused", paused);
+      // ponytail: pauses every GSAP tween on the page; fine while this experiment owns the page, scope to a parent timeline if it ever shares one.
+      if (paused) {
+        gsap.globalTimeline.pause();
+      } else {
+        gsap.globalTimeline.resume();
+      }
+      for (const p of active?.pausables ?? []) {
+        if (paused) {
+          p.pause();
+        } else {
+          p.play();
+        }
+      }
+    });
+
+    if (motion) {
+      // ponytail: page-wide like the pause above; the particle simulation reads the same knob.
+      gsap.globalTimeline.timeScale(MOTION_SPEED);
+      conductor.start();
+    }
+    bar.hidden = false;
+    select(0);
+  };
+
+  const root = document.documentElement;
+  const group = document.querySelector<HTMLElement>("[data-ebg]");
+  if (group && root.dataset.ebgBoot === "pending") {
+    try {
+      setup(group);
+      clearTimeout((window as Window & { __ebgBootTimer?: number }).__ebgBootTimer);
+      root.dataset.ebgBoot = "running";
+    } catch (error) {
+      // Readable fallback: both grids, no tab bar.
+      for (const panel of group.querySelectorAll<HTMLElement>("[data-ebg-panel]")) {
+        panel.hidden = false;
+      }
+      group.querySelector<HTMLElement>(".ebg-bar")?.setAttribute("hidden", "");
+      root.dataset.ebgBoot = "recovered";
+      throw error;
+    }
+  }
+</script>
+
+<style is:global>
+  @property --ebg-angle {
+    syntax: "<angle>";
+    inherits: false;
+    initial-value: 0deg;
+  }
+
+  html[data-ebg-boot="pending"][data-ebg-motion="full"] [data-ebg-card] {
+    visibility: hidden;
+  }
+
+  /* Tabs show one grid at a time; the second waits for them instead of flashing. */
+  html[data-ebg-boot="pending"] .bgl-04b {
+    display: none;
+  }
+
+  .ebg-defs {
+    position: absolute;
+    width: 0;
+    height: 0;
+    overflow: hidden;
+  }
+
+  .bgl-04-group {
+    --ebg-grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3CfeComponentTransfer%3E%3CfeFuncA type='discrete' tableValues='0 0 .6 1'/%3E%3C/feComponentTransfer%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    --ebg-mono: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+    position: relative;
+    width: 100%;
+    min-height: 100vh;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: stretch;
+    gap: 0;
+  }
+
+  .bgl-04-group > section {
+    flex: 1 1 480px;
+    min-width: 320px;
+  }
+
+  /* ---- Shared motion hooks ---- */
+
+  .ebg-canvas {
+    position: absolute;
+    z-index: 3;
+    /* Shift's reset caps canvases at 100% width; the field sizes itself past the target. */
+    max-width: none;
+    pointer-events: none;
+    color: var(--ebg-ink1);
+  }
+
+  [data-ebg-letters] {
+    /* Stable kerning across split and revert; the offset is the second ink plate. */
+    font-kerning: none;
+    text-rendering: optimizeSpeed;
+    /* GSAP warns against balance on split targets; Shift sets it on headings. */
+    text-wrap: wrap;
+    text-shadow: var(--ebg-mis, 3px) var(--ebg-mis-y, 3px) 0 var(--ebg-ink2);
+  }
+
+  .ebg-hot {
+    color: var(--ebg-ink2);
+  }
+
+  .ebg-inv {
+    background: var(--ebg-ink1);
+    color: var(--ebg-ink-dark);
+    text-shadow: none;
+  }
+
+  [data-ebg-cta] {
+    --ebg-pulse: 0;
+    --ebg-pop: 0;
+    position: relative;
+    scale: calc(1 + var(--ebg-pop));
+    border: 2px solid transparent;
+    /* A posterized conic band, stepped around by GSAP: hard stops, no blends. */
+    background:
+      linear-gradient(var(--ebg-cta-bg), var(--ebg-cta-bg)) padding-box,
+      conic-gradient(
+          from var(--ebg-angle),
+          var(--ebg-ink1) 0 14%,
+          var(--ebg-cta-line) 14% 46%,
+          var(--ebg-ink2) 46% 58%,
+          var(--ebg-cta-line) 58% 100%
+        )
+        border-box;
+    box-shadow:
+      0 0 0 calc(var(--ebg-pulse) * 5px) var(--ebg-ink1),
+      0 0 0 calc(var(--ebg-pulse) * 11px)
+        color-mix(
+          in srgb,
+          var(--ebg-ink2) calc(var(--ebg-pulse) * 100%),
+          transparent
+        );
+  }
+
+  .ebg-bar {
+    flex: 1 1 100%;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 12px;
+    border-bottom: 2px solid #f3ede6;
+    background: #0f0c0a;
+  }
+
+  .ebg-bar[hidden] {
+    display: none;
+  }
+
+  .ebg-tabs {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  .ebg-tab,
+  .ebg-toggle {
+    padding: 8px 12px;
+    border: 2px solid #f3ede6;
+    border-radius: 0;
+    background: #0f0c0a;
+    color: #f3ede6;
+    font: 700 11px/1 var(--ebg-mono);
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    cursor: pointer;
+  }
+
+  .ebg-tab[aria-selected="true"] {
+    border-color: #c8ff2e;
+    background: #c8ff2e;
+    color: #0f0c0a;
+    box-shadow: 4px 4px 0 #ff4f1a;
+  }
+
+  .ebg-tab:focus-visible,
+  .ebg-toggle:focus-visible {
+    outline: 3px solid #c8ff2e;
+    outline-offset: 2px;
+  }
+
+  .bgl-04-group[data-ebg-paused] .bgl-04a__track {
+    animation-play-state: paused;
+  }
+
+  /* ---- A: dark poster, blaze + volt inks ---- */
+
+  .bgl-04a,
+  .bgl-04a *,
+  .bgl-04a *::before,
+  .bgl-04a *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  .bgl-04a {
+    --paper: #f3ede6;
+    --shadow: #0f0c0a;
+    --blaze: #ff4f1a;
+    --volt: #c8ff2e;
+    --card: #1a1512;
+    --line: color-mix(in srgb, var(--paper) 14%, var(--card));
+    --ebg-ink1: var(--volt);
+    --ebg-ink2: var(--blaze);
+    --ebg-ink-dark: var(--shadow);
+    --accent: var(--blaze);
+    --gap: 16px;
+    --radius: 4px;
+    position: relative;
+    isolation: isolate;
+    overflow: clip;
+    width: 100%;
+    min-height: 100vh;
+    container-type: inline-size;
+    font-family: "Segoe UI", system-ui, sans-serif;
+    padding: 48px 24px;
+    background: var(--shadow);
+    color: var(--paper);
+  }
+
+  /* Halftone sun in the corner, then a posterized grain over everything. */
+  .bgl-04a::before,
+  .bgl-04a::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+  }
+
+  .bgl-04a::before {
+    background: radial-gradient(circle, var(--blaze) 1.4px, transparent 1.9px) 0
+      0 / 7px 7px;
+    mask-image: radial-gradient(
+      circle at 100% 0%,
+      #000 0 22%,
+      rgb(0 0 0 / 0.5) 22% 38%,
+      rgb(0 0 0 / 0.18) 38% 60%,
+      transparent 60%
+    );
+  }
+
+  .bgl-04a::after {
+    z-index: 5;
+    background: var(--ebg-grain);
+    /* No blend mode: blending over live canvases re-composites the section every frame. */
+    opacity: 0.07;
+  }
+
+  .bgl-04a__grid {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    grid-auto-rows: minmax(120px, auto);
+    gap: var(--gap);
+    max-width: 1080px;
+    margin: 0 auto;
+  }
+
+  .bgl-04a__card {
+    --ebg-charge: 0;
+    position: relative;
+    grid-column: span 4;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 10px;
+    padding: 26px;
+    border-radius: var(--radius);
+    /* Diagonal halftone band in three flat densities. */
+    background:
+      linear-gradient(
+        135deg,
+        var(--card) 0 52%,
+        color-mix(in srgb, var(--card) 55%, transparent) 52% 70%,
+        transparent 70%
+      ),
+      radial-gradient(
+          circle,
+          color-mix(in srgb, var(--volt) 22%, transparent) 1px,
+          transparent 1.5px
+        )
+        0 0 / 6px 6px,
+      var(--card);
+    border: 2px solid
+      color-mix(
+        in srgb,
+        var(--volt) calc(var(--ebg-charge) * 100%),
+        var(--line)
+      );
+    box-shadow: 5px 5px 0
+      color-mix(
+        in srgb,
+        var(--blaze) calc(var(--ebg-charge) * 100%),
+        transparent
+      );
+    transition: transform 0.3s steps(3);
+  }
+
+  .bgl-04a__card:hover {
+    transform: translateY(-4px);
+  }
+
+  .bgl-04a__profile {
+    grid-row: span 2;
+    align-items: flex-start;
+  }
+
+  .bgl-04a__pic {
+    width: 104px;
+    height: 104px;
+    border-radius: 0;
+    object-fit: cover;
+    filter: url("#ebg-posterize") contrast(1.2);
+    border: 3px solid var(--volt);
+    box-shadow: 6px 6px 0 var(--blaze);
+  }
+
+  .bgl-04a__name {
+    font-size: clamp(36px, 5.4cqw, 60px);
+    font-weight: 900;
+    line-height: 0.88;
+    letter-spacing: -0.03em;
+    text-transform: uppercase;
+  }
+
+  .bgl-04a__bio {
+    font-size: 14.5px;
+    line-height: 1.6;
+    color: color-mix(in srgb, var(--paper) 70%, transparent);
+    text-wrap: pretty;
+  }
+
+  .bgl-04a__cases {
+    grid-column: span 8;
+    grid-row: span 2;
+    justify-content: flex-start;
+  }
+
+  .bgl-04a__t {
+    --ebg-mis: 2px;
+    --ebg-mis-y: 0px;
+    font-family: var(--ebg-mono);
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--volt);
+  }
+
+  .bgl-04a__ul {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .bgl-04a__ul a {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 18px 4px;
+    color: inherit;
+    text-decoration: none;
+    border-bottom: 2px dashed var(--line);
+    font-size: 18px;
+    font-weight: 800;
+  }
+
+  .bgl-04a__ul li:last-child a {
+    border-bottom: none;
+  }
+
+  .bgl-04a__case {
+    background: linear-gradient(var(--blaze), var(--blaze)) 0 100% / 0 3px
+      no-repeat;
+    transition: background-size 0.35s steps(5);
+  }
+
+  .bgl-04a__ul a:hover .bgl-04a__case,
+  .bgl-04a__ul a:focus-visible .bgl-04a__case {
+    background-size: 100% 3px;
+  }
+
+  .bgl-04a__ul em {
+    margin-left: auto;
+    font-family: var(--ebg-mono);
+    font-style: normal;
+    font-size: 13px;
+    color: color-mix(in srgb, var(--paper) 50%, transparent);
+  }
+
+  .bgl-04a__ul b {
+    font-weight: 400;
+    color: var(--volt);
+    transform: translateX(-6px);
+    opacity: 0;
+    transition:
+      transform 0.3s steps(3),
+      opacity 0.3s steps(3);
+  }
+
+  .bgl-04a__ul a:hover b,
+  .bgl-04a__ul a:focus-visible b {
+    transform: translateX(0);
+    opacity: 1;
+  }
+
+  .bgl-04a__ul a:focus-visible {
+    outline: 2px solid var(--volt);
+    outline-offset: 2px;
+  }
+
+  .bgl-04a__clock {
+    font-family: var(--ebg-mono);
+    font-size: clamp(30px, 3.6cqw, 42px);
+    font-weight: 800;
+    font-variant-numeric: tabular-nums;
+    letter-spacing: 0.02em;
+    color: var(--volt);
+    text-shadow: 3px 3px 0 var(--blaze);
+  }
+
+  .bgl-04a__loc {
+    font-family: var(--ebg-mono);
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: color-mix(in srgb, var(--paper) 55%, transparent);
+  }
+
+  .bgl-04a__links {
+    display: flex;
+    gap: 12px;
+  }
+
+  .bgl-04a__links a {
+    --ebg-cta-bg: #221c17;
+    --ebg-cta-line: color-mix(in srgb, var(--paper) 35%, var(--card));
+    display: grid;
+    place-items: center;
+    width: 50px;
+    height: 50px;
+    border-radius: 2px;
+    font-family: var(--ebg-mono);
+    font-size: 14px;
+    font-weight: 800;
+    color: var(--paper);
+    text-decoration: none;
+    transition:
+      transform 0.25s steps(3),
+      color 0.25s steps(2);
+  }
+
+  .bgl-04a__links a:hover,
+  .bgl-04a__links a:focus-visible {
+    --ebg-cta-bg: var(--blaze);
+    transform: translateY(-3px);
+    color: var(--shadow);
+  }
+
+  .bgl-04a__links a:focus-visible {
+    outline: 3px solid var(--paper);
+    outline-offset: 4px;
+  }
+
+  .bgl-04a__marquee {
+    grid-column: span 12;
+    overflow: hidden;
+    padding: 20px 0;
+    justify-content: center;
+  }
+
+  .bgl-04a__track {
+    display: flex;
+    white-space: nowrap;
+    font-size: 22px;
+    font-weight: 900;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    color: var(--volt);
+    text-shadow: 3px 3px 0 var(--blaze);
+    /* Stepped, like a posterized frame rate. */
+    animation: bgl-04a-slide 36s steps(432) infinite;
+  }
+
+  .bgl-04a__marquee:hover .bgl-04a__track {
+    animation-play-state: paused;
+  }
+
+  @keyframes bgl-04a-slide {
+    to {
+      transform: translateX(-50%);
+    }
+  }
+
+  @container (max-width: 880px) {
+    .bgl-04a__card {
+      grid-column: span 6;
+    }
+
+    .bgl-04a__cases,
+    .bgl-04a__marquee {
+      grid-column: span 12;
+    }
+  }
+
+  @container (max-width: 560px) {
+    .bgl-04a__card,
+    .bgl-04a__cases,
+    .bgl-04a__marquee {
+      grid-column: span 12;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .bgl-04a__card,
+    .bgl-04a__links a {
+      transition: none;
+    }
+
+    .bgl-04a__track {
+      animation: none;
+    }
+
+    .bgl-04a__ul b {
+      transition: none;
+      opacity: 1;
+      transform: none;
+    }
+  }
+
+  /* ---- B: light poster, red + blue inks ---- */
+
+  .bgl-04b,
+  .bgl-04b *,
+  .bgl-04b *::before,
+  .bgl-04b *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+  }
+
+  .bgl-04b {
+    --paper: #f2f0eb;
+    --ink: #111;
+    --red: #ff3b1f;
+    --blue: #2340ff;
+    --ebg-ink1: var(--blue);
+    --ebg-ink2: var(--red);
+    --ebg-ink-dark: var(--paper);
+    --shift: 6px;
+    --gap: 16px;
+    --radius: 0px;
+    position: relative;
+    isolation: isolate;
+    overflow: clip;
+    width: 100%;
+    min-height: 100vh;
+    container-type: inline-size;
+    font-family: "Segoe UI", system-ui, sans-serif;
+    padding: 48px 24px;
+    background: var(--paper);
+    color: var(--ink);
+  }
+
+  .bgl-04b::before,
+  .bgl-04b::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    pointer-events: none;
+  }
+
+  .bgl-04b::before {
+    background: radial-gradient(circle, var(--blue) 1.6px, transparent 2.1px) 0
+      0 / 8px 8px;
+    mask-image: radial-gradient(
+      circle at 0% 100%,
+      #000 0 20%,
+      rgb(0 0 0 / 0.45) 20% 36%,
+      rgb(0 0 0 / 0.15) 36% 58%,
+      transparent 58%
+    );
+  }
+
+  .bgl-04b::after {
+    z-index: 5;
+    background: var(--ebg-grain);
+    opacity: 0.08;
+  }
+
+  .bgl-04b__grid {
+    display: grid;
+    grid-template-columns: repeat(12, 1fr);
+    grid-auto-rows: minmax(150px, auto);
+    gap: var(--gap);
+    max-width: 1080px;
+    margin: 0 auto;
+  }
+
+  .bgl-04b__card {
+    --ebg-charge: 0;
+    position: relative;
+    grid-column: span 4;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 24px;
+    border-radius: var(--radius);
+    background:
+      linear-gradient(315deg, transparent 0 22%, #fff 22%),
+      radial-gradient(circle, var(--red) 1.2px, transparent 1.7px) 0 0 / 6px 6px,
+      #fff;
+    border: 3px solid
+      color-mix(in srgb, var(--blue) calc(var(--ebg-charge) * 100%), var(--ink));
+    box-shadow: var(--shift) var(--shift) 0
+      color-mix(in srgb, var(--red) calc(var(--ebg-charge) * 100%), var(--ink));
+    transition:
+      transform 0.15s steps(2),
+      box-shadow 0.15s steps(2);
+  }
+
+  .bgl-04b__card:hover {
+    transform: translate(var(--shift), var(--shift));
+    box-shadow: 0 0 0 var(--ink);
+  }
+
+  .bgl-04b__intro {
+    grid-column: span 8;
+  }
+
+  .bgl-04b__idx {
+    --ebg-mis: 1px;
+    --ebg-mis-y: 1px;
+    font-family: var(--ebg-mono);
+    font-size: 13px;
+    font-weight: 800;
+    letter-spacing: 0.1em;
+  }
+
+  .bgl-04b__name {
+    --ebg-mis: 5px;
+    --ebg-mis-y: 4px;
+    font-size: clamp(44px, 7cqw, 84px);
+    font-weight: 900;
+    letter-spacing: -0.04em;
+    line-height: 0.88;
+  }
+
+  .bgl-04b__role {
+    font-family: var(--ebg-mono);
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+  }
+
+  .bgl-04b__work {
+    --ebg-mis: 2px;
+    --ebg-mis-y: 2px;
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 10px;
+    font-size: clamp(19px, 2.2cqw, 25px);
+    font-weight: 900;
+    letter-spacing: -0.01em;
+    color: var(--ink);
+    text-decoration: none;
+    line-height: 1.05;
+  }
+
+  .bgl-04b__work b {
+    font-weight: 900;
+    color: var(--red);
+    transition: transform 0.2s steps(2);
+  }
+
+  .bgl-04b__work:hover b,
+  .bgl-04b__work:focus-visible b {
+    transform: translate(3px, -3px);
+  }
+
+  .bgl-04b__work:focus-visible,
+  .bgl-04b__mail:focus-visible {
+    outline: 3px dashed currentColor;
+    outline-offset: 6px;
+  }
+
+  .bgl-04b__contact {
+    background:
+      radial-gradient(
+          circle,
+          color-mix(in srgb, var(--blue) 60%, transparent) 1.2px,
+          transparent 1.7px
+        )
+        0 0 / 6px 6px,
+      var(--ink);
+    color: var(--paper);
+    box-shadow: var(--shift) var(--shift) 0 var(--red);
+  }
+
+  .bgl-04b__contact .bgl-04b__idx {
+    color: var(--paper);
+  }
+
+  .bgl-04b__mail {
+    --ebg-cta-bg: var(--ink);
+    --ebg-cta-line: var(--paper);
+    align-self: flex-start;
+    display: inline-block;
+    padding: 10px 14px;
+    border-width: 3px;
+    font-family: var(--ebg-mono);
+    font-size: clamp(14px, 1.7cqw, 18px);
+    font-weight: 800;
+    color: var(--paper);
+    text-decoration: none;
+    transition: color 0.2s steps(2);
+  }
+
+  .bgl-04b__mail:hover,
+  .bgl-04b__mail:focus-visible {
+    --ebg-cta-bg: var(--red);
+    color: var(--ink);
+  }
+
+  @container (max-width: 880px) {
+    .bgl-04b__card {
+      grid-column: span 6;
+    }
+
+    .bgl-04b__intro {
+      grid-column: span 12;
+    }
+  }
+
+  @container (max-width: 560px) {
+    .bgl-04b__card,
+    .bgl-04b__intro {
+      grid-column: span 12;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .bgl-04b__card,
+    .bgl-04b__work b {
+      transition: none;
+    }
+
+    .bgl-04b__card:hover {
+      transform: none;
+      box-shadow: var(--shift) var(--shift) 0 var(--ink);
+    }
+  }
+</style>

@@ -1,0 +1,16 @@
+---
+title: Elastic Accordion
+description: An accordion of separate rounded panels that settle with a stretchy, balloon-like bounce.
+pubDate: 2026-10-04
+demo: ./Accordion.astro
+---
+
+An accordion of separate rounded panels, one answer open at a time. Opening a row overshoots its height and settles back, narrowing slightly as it stretches like a balloon; closing one lands shut, rebounds a few pixels and settles.
+
+## How it works
+
+Every row is a native `details` element, so keyboard support and the no-JavaScript fallback come free. A click handler takes over the toggle and animates the row's height with the Web Animations API between its closed and open sizes, both measured on the spot.
+
+The bounce is a damped spring sampled into a CSS `linear()` easing. Opening uses it as is, overshooting by about 13%. A second animation squeezes the panel's width by up to 3% in step with how far past its target height it is, and lets it swell when it sags short, so it reads as a balloon keeping its volume. Closing can't overshoot past zero, since a negative height is just clipped, so its curve folds the overshoot back: the panel hits closed and rebounds instead.
+
+Clicking again mid-animation starts from the current height, so rapid clicks never jump. Reduced motion swaps the spring for a short ease-out.

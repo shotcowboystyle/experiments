@@ -1,0 +1,54 @@
+---
+/**
+ * Shift CSS button.
+ * Icon-only buttons need an aria-label.
+ *
+ * @example
+ * <Button variant="secondary" size="lg">Save</Button>
+ * <Button loading>Saving</Button>
+ * <Button icon aria-label="Close"><X /></Button>
+ * <Button static>Submit</Button>
+ */
+import "./button.css";
+
+import type { HTMLAttributes } from "astro/types";
+
+import type { ButtonSize, ButtonVariant } from "./types";
+
+interface Props extends HTMLAttributes<"button"> {
+  variant?: ButtonVariant;
+  size?: ButtonSize;
+  loading?: boolean;
+  icon?: boolean;
+  block?: boolean;
+  /** Skips the scale-on-press where the motion would distract. */
+  static?: boolean;
+}
+
+const {
+  variant = "primary",
+  size,
+  disabled = false,
+  loading = false,
+  icon = false,
+  block = false,
+  static: isStatic = false,
+  type = "button",
+  ...rest
+} = Astro.props;
+---
+
+<button
+  s-btn={variant}
+  s-size={size}
+  s-icon={icon || undefined}
+  s-block={block || undefined}
+  s-loading={loading || undefined}
+  data-static={isStatic || undefined}
+  type={type}
+  disabled={disabled || loading}
+  aria-busy={loading || undefined}
+  {...rest}
+>
+  <slot />
+</button>

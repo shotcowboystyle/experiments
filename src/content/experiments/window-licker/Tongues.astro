@@ -1,0 +1,567 @@
+---
+---
+
+<div class="demo" data-testid="window-licker-demo">
+  <div
+    class="licker"
+    role="img"
+    aria-label="Three smileys taking turns licking a window"
+  >
+    <div class="smiley a"><div class="face"><div class="tongue"></div></div></div>
+    <div class="smiley b"><div class="face"><div class="tongue"></div></div></div>
+    <div class="smiley c"><div class="face"><div class="tongue"></div></div></div>
+  </div>
+  <!-- The loop never ends, so it gets a pause (WCAG 2.2.2). -->
+  <label class="pause">
+    <input type="checkbox" />
+    Pause animation
+  </label>
+</div>
+
+<style>
+  .demo {
+    /* Skips layout for the looping smileys while the demo is offscreen. */
+    content-visibility: auto;
+    contain-intrinsic-size: auto 24rem;
+  }
+
+  .pause {
+    display: flex;
+    align-items: center;
+    gap: var(--s-space-2);
+    margin-top: var(--s-space-8);
+    color: var(--page-muted);
+    font-size: 0.875rem;
+    cursor: pointer;
+  }
+
+  .demo:has(.pause :checked) .licker :is(*, *::after) {
+    animation-play-state: paused;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .licker :is(*, *::after) {
+      animation: none !important;
+    }
+
+    .pause {
+      display: none;
+    }
+  }
+
+  /*
+   * Corners: 1 top-left, 2 top-right, 3 bottom-left, 4 bottom-right.
+   * One 12-beat timeline drives every smiley. Each beat, the smiley beside
+   * the empty corner drops into it mouth-first-backwards: its tongue stays
+   * stuck to the glass in the old corner, stretches, then slides home. The
+   * three smileys run the same keyframes four beats apart.
+   */
+  .licker {
+    --beat: 2.2s;
+    --poke: 21px;
+    --reach: calc(var(--poke) + 64px);
+    position: relative;
+    width: 112px;
+    height: 112px;
+  }
+
+  /* liquid glass: a soft lens band blurs the edges, the middle stays clear */
+  .licker::before,
+  .licker::after {
+    content: "";
+    position: absolute;
+    z-index: 1;
+    inset: -12px;
+    border-radius: 26px;
+    pointer-events: none;
+  }
+
+  .licker::before {
+    backdrop-filter: blur(3px) saturate(1.5);
+    mask:
+      linear-gradient(90deg, #000, transparent 14px calc(100% - 14px), #000),
+      linear-gradient(#000, transparent 14px calc(100% - 14px), #000);
+  }
+
+  .licker::after {
+    border: 1px solid light-dark(rgb(255 255 255 / 0.7), rgb(255 255 255 / 0.18));
+    background:
+      linear-gradient(
+        rgb(255 255 255 / 0.16),
+        rgb(255 255 255 / 0) 45%,
+        rgb(255 255 255 / 0) 75%,
+        rgb(255 255 255 / 0.08)
+      ),
+      rgb(190 220 245 / 0.07);
+    box-shadow:
+      inset 0 1px 1px rgb(255 255 255 / 0.6),
+      inset 0 -1px 1px rgb(255 255 255 / 0.2),
+      inset 0 10px 18px -10px rgb(255 255 255 / 0.4),
+      inset 0 -12px 20px -12px rgb(0 40 80 / 0.12),
+      0 12px 32px rgb(0 20 40 / 0.14);
+  }
+
+  .smiley,
+  .face,
+  .tongue,
+  .tongue::after {
+    animation-duration: calc(var(--beat) * 12);
+    animation-delay: var(--delay);
+    animation-timing-function: cubic-bezier(0.45, 0, 0.55, 1);
+    animation-iteration-count: infinite;
+  }
+
+  /* The skin and its lighting stay put; only the features inside turn. */
+  .smiley {
+    position: absolute;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background:
+      radial-gradient(
+        circle at 34% 24%,
+        rgb(255 255 245 / 0.95),
+        rgb(255 250 210 / 0.5) 9%,
+        transparent 24%
+      ),
+      radial-gradient(circle at 60% 115%, rgb(255 210 90 / 0.55), transparent 45%),
+      radial-gradient(
+        circle at 40% 35%,
+        #ffe766,
+        #fcd61f 35%,
+        #efb40e 65%,
+        #c98a00 88%,
+        #9c6200
+      );
+    box-shadow:
+      0 6px 10px -2px rgb(60 30 0 / 0.35),
+      0 2px 3px rgb(0 0 0 / 0.2);
+    animation-name: travel;
+  }
+
+  /* starting corners; also the still frame for reduced motion */
+  .a {
+    --delay: 0s;
+    --turn: 180deg;
+    translate: 64px 0;
+  }
+
+  .b {
+    --delay: calc(var(--beat) * -8);
+    --turn: 90deg;
+    translate: 0 0;
+  }
+
+  .c {
+    --delay: calc(var(--beat) * -4);
+    --turn: 0deg;
+    translate: 0 64px;
+  }
+
+  /* eyes: catchlight, pupil, iris, then the white */
+  .face {
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    rotate: var(--turn);
+    background:
+      radial-gradient(circle 1.3px at 13.8px 13.4px, #fff 80%, transparent),
+      radial-gradient(circle 1.3px at 31.8px 13.4px, #fff 80%, transparent),
+      radial-gradient(circle 1.9px at 15px 15.6px, #0b0805 85%, transparent),
+      radial-gradient(circle 1.9px at 33px 15.6px, #0b0805 85%, transparent),
+      radial-gradient(
+        circle 3.5px at 15px 15.6px,
+        #96652f,
+        #5e3a14 70%,
+        #2b1a07 90%,
+        transparent
+      ),
+      radial-gradient(
+        circle 3.5px at 33px 15.6px,
+        #96652f,
+        #5e3a14 70%,
+        #2b1a07 90%,
+        transparent
+      ),
+      radial-gradient(
+        5px 5.6px at 15px 15px,
+        #fff,
+        #f1ece2 55%,
+        #c9bca6 85%,
+        rgb(120 70 0 / 0.6) 95%,
+        transparent
+      ),
+      radial-gradient(
+        5px 5.6px at 33px 15px,
+        #fff,
+        #f1ece2 55%,
+        #c9bca6 85%,
+        rgb(120 70 0 / 0.6) 95%,
+        transparent
+      );
+    animation-name: turn;
+  }
+
+  /* edge falloff over the features, then teeth and a deep open grin */
+  .face::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background:
+      radial-gradient(
+        circle closest-side,
+        transparent 58%,
+        rgb(150 70 0 / 0.16) 80%,
+        rgb(100 40 0 / 0.38)
+      ),
+      repeating-linear-gradient(
+          90deg,
+          transparent 0 5.6px,
+          rgb(150 130 100 / 0.18) 5.6px 6px
+        )
+        no-repeat 9px 24px / 30px 3.5px,
+      radial-gradient(
+          ellipse 15px 4px at 50% 0,
+          #fdfaf2,
+          #ece4d3 70%,
+          rgb(200 185 160 / 0.6) 92%,
+          transparent
+        )
+        no-repeat 9px 24px / 30px 4px,
+      radial-gradient(
+          ellipse 18px 16px at 50% 0,
+          #210404,
+          #4a0e0e 55%,
+          #78221d 86%,
+          #b0582a 95%,
+          transparent
+        )
+        no-repeat 6px 24px / 36px 16px;
+  }
+
+  /* Anchored in the mouth, grows toward the corner the smiley just left. */
+  .tongue {
+    box-sizing: border-box;
+    position: absolute;
+    top: 29px;
+    left: 8px;
+    width: 32px;
+    height: 0;
+    border-radius: 0 0 16px 16px;
+    /* throat shadow, wet gloss, center groove, pressed-flat pale middle, fine papillae, rounded body */
+    background:
+      linear-gradient(rgb(40 0 8 / 0.55), transparent 7px),
+      radial-gradient(
+        4px 9px at 32% calc(100% - 10px),
+        rgb(255 255 255 / 0.5),
+        transparent
+      ),
+      linear-gradient(
+        90deg,
+        transparent 45%,
+        rgb(120 15 35 / 0.3) 50%,
+        transparent 55%
+      ),
+      radial-gradient(
+        ellipse farthest-side at 50% 60%,
+        rgb(255 180 185 / 0.5),
+        transparent 75%
+      ),
+      radial-gradient(circle, rgb(140 20 40 / 0.14) 0.6px, transparent 1px) 0 0 /
+        3px 3px,
+      linear-gradient(
+        90deg,
+        #a3263a,
+        #d9505f 22%,
+        #ea6d7b 50%,
+        #d9505f 78%,
+        #a3263a
+      );
+    box-shadow: inset 0 0 3px rgb(100 0 20 / 0.45);
+    animation-name: lick;
+  }
+
+  /* faint spit smear left on the glass as the tongue slides home */
+  .tongue::after {
+    content: "";
+    position: absolute;
+    top: 100%;
+    left: 3px;
+    width: 26px;
+    height: 0;
+    border-radius: 0 0 13px 13px;
+    background: linear-gradient(
+      90deg,
+      rgb(255 255 255 / 0.02),
+      rgb(255 255 255 / 0.09) 40%,
+      rgb(255 255 255 / 0.02)
+    );
+    filter: blur(1px);
+    opacity: 0;
+    animation-name: trail;
+  }
+
+  @keyframes travel {
+    0% {
+      translate: 64px 0;
+    }
+
+    1% {
+      translate: 64px 0;
+    }
+
+    2.667% {
+      translate: 64px 64px;
+    }
+
+    26% {
+      translate: 64px 64px;
+    }
+
+    27.667% {
+      translate: 0 64px;
+    }
+
+    51% {
+      translate: 0 64px;
+    }
+
+    52.667% {
+      translate: 0 0;
+    }
+
+    76% {
+      translate: 0 0;
+    }
+
+    77.667% {
+      translate: 64px 0;
+    }
+
+    100% {
+      translate: 64px 0;
+    }
+  }
+
+  @keyframes turn {
+    0% {
+      rotate: 180deg;
+    }
+
+    17.5% {
+      rotate: 180deg;
+    }
+
+    19.583% {
+      rotate: 270deg;
+    }
+
+    42.5% {
+      rotate: 270deg;
+    }
+
+    44.583% {
+      rotate: 360deg;
+    }
+
+    67.5% {
+      rotate: 360deg;
+    }
+
+    69.583% {
+      rotate: 450deg;
+    }
+
+    92.5% {
+      rotate: 450deg;
+    }
+
+    94.583% {
+      rotate: 540deg;
+    }
+
+    100% {
+      rotate: 540deg;
+    }
+  }
+
+  @keyframes lick {
+    0% {
+      height: 0;
+    }
+
+    1% {
+      height: var(--poke);
+    }
+
+    2.667% {
+      height: var(--reach);
+    }
+
+    3.5% {
+      height: var(--reach);
+    }
+
+    7.917% {
+      height: 0;
+    }
+
+    25% {
+      height: 0;
+    }
+
+    26% {
+      height: var(--poke);
+    }
+
+    27.667% {
+      height: var(--reach);
+    }
+
+    28.5% {
+      height: var(--reach);
+    }
+
+    32.917% {
+      height: 0;
+    }
+
+    50% {
+      height: 0;
+    }
+
+    51% {
+      height: var(--poke);
+    }
+
+    52.667% {
+      height: var(--reach);
+    }
+
+    53.5% {
+      height: var(--reach);
+    }
+
+    57.917% {
+      height: 0;
+    }
+
+    75% {
+      height: 0;
+    }
+
+    76% {
+      height: var(--poke);
+    }
+
+    77.667% {
+      height: var(--reach);
+    }
+
+    78.5% {
+      height: var(--reach);
+    }
+
+    82.917% {
+      height: 0;
+    }
+
+    100% {
+      height: 0;
+    }
+  }
+
+  @keyframes trail {
+    0% {
+      height: 0;
+      opacity: 0;
+    }
+
+    3.5% {
+      height: 0;
+      opacity: 1;
+    }
+
+    7.917% {
+      height: var(--reach);
+      opacity: 1;
+    }
+
+    9.167% {
+      height: var(--reach);
+      opacity: 0;
+    }
+
+    9.25% {
+      height: 0;
+      opacity: 0;
+    }
+
+    28.5% {
+      height: 0;
+      opacity: 1;
+    }
+
+    32.917% {
+      height: var(--reach);
+      opacity: 1;
+    }
+
+    34.167% {
+      height: var(--reach);
+      opacity: 0;
+    }
+
+    34.25% {
+      height: 0;
+      opacity: 0;
+    }
+
+    53.5% {
+      height: 0;
+      opacity: 1;
+    }
+
+    57.917% {
+      height: var(--reach);
+      opacity: 1;
+    }
+
+    59.167% {
+      height: var(--reach);
+      opacity: 0;
+    }
+
+    59.25% {
+      height: 0;
+      opacity: 0;
+    }
+
+    78.5% {
+      height: 0;
+      opacity: 1;
+    }
+
+    82.917% {
+      height: var(--reach);
+      opacity: 1;
+    }
+
+    84.167% {
+      height: var(--reach);
+      opacity: 0;
+    }
+
+    84.25% {
+      height: 0;
+      opacity: 0;
+    }
+
+    100% {
+      height: 0;
+      opacity: 0;
+    }
+  }
+
+</style>

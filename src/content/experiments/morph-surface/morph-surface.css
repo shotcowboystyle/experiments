@@ -1,0 +1,135 @@
+/* Imported from a React island, outside any Astro scope, so it is styled from
+   this global file with a `morph-surface-` prefix. */
+
+/* Reserves the open size up front, so the page never reflows as the surface
+   grows. The surface sits on the bottom edge and grows upward, like a dock. */
+.morph-surface {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  width: min(360px, 100%);
+  height: 200px;
+  container-type: inline-size;
+}
+
+.morph-surface-body {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  overflow: clip;
+  /* Neutral like the page around it; Shift's surfaces carry a blue tint. */
+  background: light-dark(oklch(1 0 0), oklch(0.25 0 0));
+  box-shadow: var(--s-shadow-md);
+  color: var(--page-ink);
+  /* An inset outline rather than a border, so the panel inside can be exactly
+     as wide as the surface. */
+  outline: var(--page-edge);
+  outline-offset: -1px;
+}
+
+.morph-surface-dock {
+  display: flex;
+  align-items: center;
+  gap: var(--s-space-1);
+  height: 44px;
+  margin-top: auto;
+  padding-inline: var(--s-space-3) var(--s-space-1);
+  white-space: nowrap;
+  user-select: none;
+  transition: opacity var(--s-duration-150) var(--s-ease-out);
+
+  /* The panel's field is translucent, so the dock under it fades out too. */
+  &[inert] {
+    opacity: 0;
+  }
+
+  [s-btn] {
+    border-radius: var(--s-radius-full);
+    color: var(--page-ink);
+  }
+}
+
+/* Holds the orb's place while it fades, so the label doesn't shift. */
+.morph-surface-orb-slot {
+  display: grid;
+  width: 24px;
+  height: 24px;
+}
+
+/* Always the full open size and pinned to the bottom, so its content never
+   reflows mid-morph; the surface's clip reveals it from the dock upward. */
+.morph-surface-panel {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 100cqi;
+  height: 200px;
+  translate: -50% 0;
+}
+
+.morph-surface-panel-inner {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  padding: var(--s-space-1);
+}
+
+.morph-surface-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--s-space-1) 0 var(--s-space-1) var(--s-space-2);
+  user-select: none;
+
+  label {
+    display: flex;
+    align-items: center;
+    gap: var(--s-space-2);
+    font-size: var(--s-text-sm);
+  }
+
+  [s-btn] {
+    gap: var(--s-space-1);
+    color: var(--page-ink);
+    padding-inline: var(--s-space-1);
+  }
+}
+
+.morph-surface kbd {
+  display: inline-flex;
+  align-items: center;
+  height: 1.5rem;
+  padding-inline: 6px;
+  border-radius: var(--s-radius-sm);
+  background: color-mix(in oklch, var(--page-ink) 6%, transparent);
+  box-shadow: inset 0 0 0 1px color-mix(in oklch, var(--page-ink) 10%, transparent);
+  color: var(--page-ink);
+  font: inherit;
+  font-size: var(--s-text-xs);
+}
+
+.morph-surface-field {
+  flex: 1;
+  width: 100%;
+  padding: var(--s-space-4);
+  scroll-padding-block: var(--s-space-2);
+  border: 0;
+  border-radius: 10px;
+  background: color-mix(in oklch, var(--page-ink) 5%, transparent);
+  color: var(--page-ink);
+  font: inherit;
+  font-size: var(--s-text-sm);
+  resize: none;
+
+  &::placeholder {
+    color: var(--page-muted);
+  }
+
+  /* It takes focus every time the panel opens, so a full focus ring would
+     always be on; a hairline still marks it without shouting. */
+  &:focus-visible {
+    outline: 1px solid color-mix(in oklch, var(--page-ink) 25%, transparent);
+    outline-offset: -1px;
+  }
+}

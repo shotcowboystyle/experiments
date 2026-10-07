@@ -1,0 +1,16 @@
+---
+title: Staggered Text
+description: Letters that roll over one by one, spreading out from wherever the pointer lands.
+pubDate: 2026-10-04
+demo: ./StaggeredTextBlock.astro
+---
+
+Text that rolls like a split-flap board. Point at any letter and it flips up to an identical copy, then its neighbours follow one after another, rippling out in both directions. Move off the text and the letters roll back, faster than they left.
+
+## How it works
+
+Each letter sits in its own one-line window clipped with `clip-path: inset(0)`, which, unlike `overflow`, leaves the text baseline alone. Inside, the letter has a copy positioned one line below, and the pair slides up by `-100%` together, so the copy lands exactly where the original was.
+
+Every letter animates to the same variant, but its `custom` value is its distance from the hovered letter, and that distance scales the delay: 40ms per letter going out, 20ms coming back. The text is split with `Intl.Segmenter`, so emoji and accented letters stay whole, and each word is kept unbreakable so lines wrap between words.
+
+The rolling letters are hidden from assistive tech, and a visually hidden copy of the text gives the element its name. The duplicates can't be selected, so copying the text gives it once. With reduced motion, hovering does nothing.

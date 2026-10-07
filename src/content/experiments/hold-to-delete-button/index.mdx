@@ -1,0 +1,16 @@
+---
+title: Hold to Delete Button
+description: A destructive action that only fires once you hold it down for two seconds.
+pubDate: 2026-10-04
+demo: ./HoldToDeleteButtonBlock.astro
+---
+
+A delete button that can't be tapped by accident. Press and hold, with a pointer or Space or Enter, and a solid red fill sweeps across the pill while the label changes to "Keep holding". Hold for two seconds and it turns green, reads "Deleted", then resets. Let go early and the fill drains back and the button shakes, harder the closer you got.
+
+## How it works
+
+The content is drawn twice: a tinted copy underneath and a filled copy on top, clipped with `inset()` from a motion value that runs linearly from 0 to 1 over the hold. A timer of the same length decides completion, so the fill is only ever decoration.
+
+Releasing reads how far the hold got. Under 15% counts as a tap and simply settles. Past 15% the button gives a small shake, and past halfway a bigger one with a slight rotation. The fill drains on a 0.3s spring with no bounce. Reduced motion keeps the fill but skips the press scale and the shakes.
+
+The pointer is captured on press, so sliding off the edge mid-hold doesn't count as letting go. Both visual copies are hidden from assistive tech; a polite live region carries the label and announces each state change.

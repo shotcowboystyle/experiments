@@ -1,0 +1,25 @@
+---
+import LiquidGlassWidgetsDemo from "./LiquidGlassWidgetsDemo";
+---
+
+<div class="demo" data-testid="liquid-glass-widgets-demo">
+  <LiquidGlassWidgetsDemo client:visible />
+</div>
+
+<style>
+  /* Glass needs something to frost. A dark wallpaper of colour pools, plus a
+     fine dot grid: the pools give the blur colour to carry, the dots are what
+     show it is blurring at all. */
+  .demo {
+    color-scheme: dark;
+    align-content: start;
+    padding-block: var(--s-space-16);
+    background:
+      radial-gradient(oklch(1 0 0 / 0.12) 1px, transparent 1.5px) 0 0 / 22px 22px,
+      radial-gradient(40% 30% at 12% 14%, oklch(0.55 0.22 300 / 0.85), transparent),
+      radial-gradient(35% 25% at 88% 28%, oklch(0.62 0.17 215 / 0.8), transparent),
+      radial-gradient(45% 30% at 30% 62%, oklch(0.6 0.2 15 / 0.7), transparent),
+      radial-gradient(40% 30% at 80% 88%, oklch(0.68 0.16 160 / 0.7), transparent),
+      oklch(0.17 0.03 280);
+  }
+</style>

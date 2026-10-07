@@ -1,0 +1,181 @@
+---
+import "@shift-css/core";
+
+import { SITE_DESCRIPTION, SITE_TITLE } from "~/consts";
+import { withBase } from "~/lib/with-base";
+
+interface Props {
+  title: string;
+  description?: string;
+}
+
+const { title, description } = Astro.props;
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="description" content={description ?? SITE_DESCRIPTION} />
+    <link rel="icon" type="image/svg+xml" href={withBase("/favicon.svg")} />
+    <title>{title === SITE_TITLE ? title : `${title} · ${SITE_TITLE}`}</title>
+    <!-- Restores the dock's scheme choice before first paint; unset follows the OS. -->
+    <!--
+      Arriving from the portfolio (same origin, outside /experiments/) gets its
+      diagonal mint wipe. The portfolio names the type on its side; this is the
+      new page's half, and it has to run before first render, so it is inline.
+    -->
+    <script is:inline>
+      addEventListener("pagereveal", (event) => {
+        const from = "navigation" in window ? navigation.activation?.from?.url : undefined;
+        if (event.viewTransition && from && !new URL(from).pathname.startsWith("/experiments")) {
+          event.viewTransition.types.add("wipe");
+        }
+      });
+    </script>
+    <script is:inline>
+      try {
+        const scheme = localStorage.getItem("color-scheme");
+        if (scheme) {
+          document.documentElement.style.colorScheme = scheme;
+        }
+      } catch {
+        // Safe to continue: storage blocked just means the OS scheme applies.
+      }
+    </script>
+  </head>
+  <body>
+    <slot />
+  </body>
+</html>
+
+<style is:global>
+  @view-transition {
+    navigation: auto;
+  }
+
+  /* The portfolio's wipe, so the two sites read as one place. Reduced motion keeps
+     the default crossfade. */
+  @media (prefers-reduced-motion: no-preference) {
+    html:active-view-transition-type(wipe) {
+      &::view-transition-image-pair(root) {
+        background-color: oklch(77% 0.17 159.37deg);
+      }
+
+      &::view-transition-old(root),
+      &::view-transition-new(root) {
+        mix-blend-mode: normal;
+        animation-duration: 800ms;
+        animation-timing-function: cubic-bezier(0.32, 0.72, 0, 1);
+        animation-fill-mode: both;
+      }
+
+      &::view-transition-old(root) {
+        animation-name: wipe-out;
+      }
+
+      &::view-transition-new(root) {
+        animation-name: wipe-in;
+        animation-delay: 140ms;
+      }
+    }
+
+    @keyframes wipe-out {
+      from {
+        clip-path: polygon(0% 100%, 0% 100%, 0% -200%, 300% -200%, 300% 100%);
+      }
+
+      to {
+        clip-path: polygon(200% 100%, 0% -100%, 0% -200%, 300% -200%, 300% 100%);
+      }
+    }
+
+    @keyframes wipe-in {
+      from {
+        clip-path: polygon(0% 100%, 0% 100%, 0% 100%);
+      }
+
+      to {
+        clip-path: polygon(0% 100%, 0% -100%, 200% 100%);
+      }
+    }
+  }
+
+  :root {
+    /* Paper white and an untinted grey, instead of Shift's blue-tinted
+       neutrals: the page frames colourful demos, so it stays out of their way. */
+    --s-surface-base: light-dark(#fff, oklch(0.16 0 0));
+    --page-ink: light-dark(oklch(0.16 0 0), oklch(0.96 0 0));
+    --page-muted: light-dark(oklch(0.48 0 0), oklch(0.72 0 0));
+    --page-stage: light-dark(oklch(0.975 0 0), oklch(0.21 0 0));
+    /* Gallery tiles and demo stages share one lifted surface: a 6px halo at
+       3%, plus a pure black/white hairline (`--page-edge`) drawn as an
+       outline so it hugs the radius without taking up layout. */
+    --page-halo: 0 0 0 6px color-mix(in oklch, var(--page-ink) 3%, transparent);
+    --page-edge: 1px solid light-dark(oklch(0 0 0 / 0.1), oklch(1 0 0 / 0.1));
+  }
+
+  body {
+    background: var(--s-surface-base);
+    color: var(--page-ink);
+  }
+
+  /* ---- Article body ---- */
+
+  /* Prose only; a `role="list"` list is layout (the gallery), not copy. */
+  .page-main > :where(p, ul, ol):not([role="list"]) {
+    max-width: 65ch;
+    margin-block: var(--s-space-4) 0;
+    color: var(--page-muted);
+    font-size: 0.875rem;
+    line-height: var(--s-leading-relaxed);
+    text-wrap: pretty;
+  }
+
+  .page-main > :where(p, ul, ol):first-child {
+    margin-top: 0;
+  }
+
+  .page-main > h2 {
+    margin: var(--s-space-10) 0 0;
+    color: var(--page-ink);
+    font-weight: 600;
+    font-size: 1rem;
+    line-height: 1.5rem;
+  }
+
+  .page-main :where(p, li) > code {
+    padding: 0.1em 0.35em;
+    border-radius: 0.25rem;
+    background: color-mix(in oklch, var(--page-ink) 6%, transparent);
+    color: var(--page-ink);
+    font-size: 0.9em;
+  }
+
+  .page-main > pre {
+    margin-block: var(--s-space-6) 0;
+    padding: var(--s-space-4);
+    border-radius: var(--s-radius-xl);
+    font-size: 0.8125rem;
+  }
+
+  /* The stage every experiment renders on. Components add only what is
+     theirs (a forced scheme, a dark backdrop) in their own scoped `.demo`. */
+  .demo {
+    position: relative;
+    display: grid;
+    align-content: center;
+    justify-items: center;
+    gap: var(--s-space-4);
+    min-height: 24rem;
+    margin-block: var(--s-space-10);
+    padding: var(--s-space-6);
+    overflow: hidden;
+    border-radius: var(--s-radius-2xl);
+    background: var(--page-stage);
+    box-shadow: var(--page-halo);
+    outline: var(--page-edge);
+    outline-offset: -1px;
+  }
+</style>

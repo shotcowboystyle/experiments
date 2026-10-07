@@ -1,0 +1,108 @@
+---
+import ArrowLeft from "@lucide/astro/icons/arrow-left";
+
+import Base from "~/layouts/Base.astro";
+
+interface Props {
+  title: string;
+  /** Shown as the lede under the title; the site description is only the meta fallback. */
+  description?: string;
+  backLink?: string;
+}
+
+const { title, description, backLink } = Astro.props;
+---
+
+<Base title={title} description={description}>
+  <div class="page">
+    <header class="page-header">
+      <a class="page-home" href="/">← shotcowboystyle</a>
+      <div class="page-title-row">
+        {
+          backLink && (
+            <a class="page-back" href={backLink} aria-label="Back to experiments">
+              <ArrowLeft aria-hidden="true" size={20} />
+            </a>
+          )
+        }
+        <h1 class="page-title">{title}</h1>
+      </div>
+      {description && <p class="page-lede">{description}</p>}
+    </header>
+
+    <main id="main-content" class="page-main">
+      <slot />
+    </main>
+  </div>
+</Base>
+
+<style>
+  .page {
+    max-width: 56rem;
+    margin-inline: auto;
+    padding: var(--s-space-8) var(--s-space-4) var(--s-space-24);
+  }
+
+  .page-header {
+    margin-bottom: var(--s-space-8);
+  }
+
+  /* Back to the portfolio this site sits beside. */
+  .page-home {
+    display: inline-block;
+    margin-bottom: var(--s-space-6);
+    color: var(--page-muted);
+    font-size: 0.875rem;
+    text-decoration: none;
+
+    &:hover,
+    &:focus-visible {
+      color: var(--page-ink);
+      text-decoration: underline;
+      text-underline-offset: 3px;
+    }
+  }
+
+  .page-title-row {
+    display: flex;
+    align-items: center;
+    gap: var(--s-space-2);
+  }
+
+  .page-title {
+    margin: 0;
+    color: var(--page-ink);
+    font-weight: 700;
+    font-size: 2.25rem;
+    line-height: 2.5rem;
+    letter-spacing: -0.02em;
+    text-wrap: balance;
+  }
+
+  /* 36px target, pulled left by its own padding so the arrow's stem lines up
+     with the text column below rather than the button's edge. */
+  .page-back {
+    display: grid;
+    place-items: center;
+    flex: none;
+    width: 2.25rem;
+    height: 2.25rem;
+    margin-left: calc(var(--s-space-2) * -1);
+    border-radius: var(--s-radius-lg);
+    color: var(--page-muted);
+    transition: color 150ms ease-out;
+
+    &:hover {
+      color: var(--page-ink);
+    }
+  }
+
+  .page-lede {
+    max-width: 65ch;
+    margin: var(--s-space-4) 0 0;
+    color: var(--page-muted);
+    font-size: 1.125rem;
+    line-height: 1.75rem;
+    text-wrap: pretty;
+  }
+</style>

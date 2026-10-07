@@ -1,0 +1,14 @@
+---
+title: Stats Widget
+description: A home-screen widget that scrolls through figures with a blur-and-slide swipe.
+pubDate: 2026-10-01
+demo: ./StatsWidgetBlock.astro
+---
+
+A small stats card of the kind you pin to a phone home screen. Swipe it up or down, or click a pill on the right, to move between Stocks, Funds and Deposits. The figure slides out, the next one slides in, and the card blurs and tilts under your finger while you drag.
+
+## How it works
+
+Each swipe past 20px up or down changes the active fund and sets a direction. `AnimatePresence` keeps the outgoing slide mounted while it exits, and the `custom` direction value makes it leave the way you pushed, with the new one entering from the opposite edge on a 0.5s curve that slightly overshoots.
+
+While dragging, the offset feeds a `blur()` of up to 10px and a `rotateY` of up to 15°, then resets once the drag ends. The dots are plain spans whose height animates between 8px and 30px, so the active one stretches into a pill.

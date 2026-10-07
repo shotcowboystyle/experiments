@@ -1,0 +1,100 @@
+/* Imported from a React island, outside any Astro scope, so it is styled from
+   this global file with a `siri-orb-` prefix. */
+
+.siri-orb-demo {
+  display: grid;
+  justify-items: center;
+  gap: var(--s-space-8);
+  width: 100%;
+}
+
+/* Sized to the largest orb plus its bloom, so dragging the size slider never
+   moves the controls. */
+.siri-orb-stage {
+  display: grid;
+  place-items: center;
+  width: 100%;
+  height: 24rem;
+}
+
+.siri-orb-controls {
+  display: grid;
+  gap: var(--s-space-2);
+  min-inline-size: 0;
+  width: min(100%, 24rem);
+  margin: 0;
+  padding: var(--s-space-3) var(--s-space-4);
+  border: 0;
+  border-radius: var(--s-radius-xl);
+  outline: var(--page-edge);
+  outline-offset: -1px;
+  color: var(--page-ink);
+  font-size: 0.8125rem;
+  font-family: var(--s-font-mono);
+
+  legend {
+    padding: 0 var(--s-space-1);
+    color: var(--page-muted);
+  }
+
+  label,
+  .siri-orb-swatches {
+    display: flex;
+    align-items: center;
+    gap: var(--s-space-2);
+  }
+
+  label:has([type='range'], select) {
+    display: grid;
+    grid-template-columns: 9rem minmax(0, 1fr) 3.5rem;
+  }
+
+  label:has(:disabled) [type='range'] {
+    opacity: 0.4;
+  }
+
+  select {
+    grid-column: span 2;
+  }
+
+  input {
+    margin: 0;
+    accent-color: var(--s-interactive-primary);
+  }
+
+  output {
+    text-align: end;
+    font-variant-numeric: tabular-nums;
+  }
+}
+
+.siri-orb-swatches > span {
+  width: 9rem;
+}
+
+.siri-orb-swatches [type='color'] {
+  width: 1.75rem;
+  height: 1.75rem;
+  padding: 0;
+  border: 0;
+  border-radius: var(--s-radius-full);
+  background: none;
+  cursor: pointer;
+
+  &::-webkit-color-swatch-wrapper {
+    padding: 0;
+  }
+
+  /* Separate rules: one unknown vendor pseudo would void a shared list. */
+  &::-webkit-color-swatch {
+    border: 0;
+    border-radius: var(--s-radius-full);
+    box-shadow: inset 0 0 0 1px oklch(0 0 0 / 0.1);
+  }
+
+  &::-moz-color-swatch {
+    border: 0;
+    border-radius: var(--s-radius-full);
+    box-shadow: inset 0 0 0 1px oklch(0 0 0 / 0.1);
+  }
+}

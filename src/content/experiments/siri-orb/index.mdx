@@ -1,0 +1,18 @@
+---
+title: Siri Orb
+description: A glowing gradient sphere that breathes, churns and listens, with every prop on a slider.
+pubDate: 2026-10-04
+demo: ./SiriOrbBlock.astro
+---
+
+An assistant orb in the spirit of Siri. Pick a state from the panel and the orb changes how it moves: `idle` breathes slowly, `listening` swells with the voice level, `thinking` churns faster without growing, `done` overshoots once, and `error` desaturates with a single sideways nudge. Size, rotation speed, the five colours and the voice level are all on controls.
+
+## How it works
+
+The colour comes from seven conic gradients on one pseudo-element, each centred somewhere different and turning at its own multiple of a single registered `@property` angle. One keyframe animates that angle, and because the gradients turn at different rates and directions the mesh never visibly repeats. It's blurred, pushed up in contrast and saturation, then overlaid with a dot screen masked away from the edge. A drifting white highlight and an inset-shadow rim on top are what make the flat disc read as a sphere.
+
+Each state is a small preset of glow, hue shift, saturation, resting scale, speed and reactivity. The voice level is a motion value, not React state, so it can update every frame without re-rendering: it tightens the blur and adds up to 12% scale, multiplied by the state's reactivity. "Simulate speech" feeds it three detuned sine waves, so the reactive states can be seen without asking for the microphone.
+
+Blur, contrast, dot size, shadow and mask all scale with the orb's size, with smaller orbs getting proportionally less, so a 24px orb stays colourful instead of muddy. With reduced motion the rotation, drift, breathing and reactivity all stop and the orb holds still in its colours.
+
+The colour pickers only speak sRGB hex, so they start from the nearest match to each oklch default. Until you touch one, the orb keeps the real oklch colour, two of which are more vivid than sRGB allows.

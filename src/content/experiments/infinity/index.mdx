@@ -1,0 +1,14 @@
+---
+title: Infinity
+description: Repeating patterns that scroll forever
+pubDate: 2026-09-26
+demo: ./InfiniteScroll.astro
+---
+
+A tiling background never runs out, so a scroll that never ends is just a slide and a snap back.
+
+## How it works
+
+Each pattern sits in a layer one tile taller than the stage. A CSS animation slides it up exactly one tile, then loops; the jump back lands on an identical frame, so the seam never shows. The pills are radio buttons, and `:has()` shows whichever layer is checked.
+
+Scroll, drag, or swipe the stage to push the pattern yourself. That offset is wrapped to one tile and stacked on top of the animation as a `transform`, so the loop never notices. The button pauses the animation; it starts paused if you prefer reduced motion.

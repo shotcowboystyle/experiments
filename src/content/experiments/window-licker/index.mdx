@@ -1,0 +1,12 @@
+---
+title: Window Licker
+description: A sliding-block loader, played by smileys licking the glass
+pubDate: 2026-09-15
+demo: ./Tongues.astro
+---
+
+The classic three-block loader, restyled as three smileys under a pane of glass. Whoever sits beside the empty corner drops into it, but its tongue stays stuck to the glass where it was and slowly licks its way back home.
+
+## How it works
+
+All three smileys run one 12-beat keyframe timeline, offset four beats apart. `translate` moves a smiley between corners while the tongue's `height` grows by exactly the same distance with the same easing, so the tip stays pinned to the glass. The tongue then shrinks back into the mouth, and a `::after` smear grows behind it to mark the lick. Between moves each smiley turns 90° so its mouth faces the corner it will leave next.

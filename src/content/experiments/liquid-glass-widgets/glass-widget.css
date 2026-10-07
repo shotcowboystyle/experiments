@@ -1,0 +1,729 @@
+/* Imported from React islands, outside any Astro scope, so it is styled from
+   this global file with a `glass-` prefix. */
+
+/* ---- Tones ----
+   Three hues per tone for the bloom gradient; the first is also the accent
+   (rings, bars, hands, icons). Lightness and chroma are shared, so no tone
+   shouts louder than another. Any element inside a widget can take its own
+   `data-tone`, which is how event bars and weather icons get their colour. */
+
+:where(.glass, .glass *)[data-tone] {
+  --glass-accent: oklch(0.74 0.16 var(--glass-h1));
+}
+
+:where(.glass, .glass *)[data-tone='cyan'] {
+  --glass-h1: 215;
+  --glass-h2: 260;
+  --glass-h3: 305;
+}
+
+:where(.glass, .glass *)[data-tone='purple'] {
+  --glass-h1: 305;
+  --glass-h2: 355;
+  --glass-h3: 305;
+}
+
+:where(.glass, .glass *)[data-tone='blue'] {
+  --glass-h1: 260;
+  --glass-h2: 278;
+  --glass-h3: 260;
+}
+
+:where(.glass, .glass *)[data-tone='pink'] {
+  --glass-h1: 355;
+  --glass-h2: 15;
+  --glass-h3: 355;
+}
+
+:where(.glass, .glass *)[data-tone='green'] {
+  --glass-h1: 163;
+  --glass-h2: 182;
+  --glass-h3: 163;
+}
+
+:where(.glass, .glass *)[data-tone='amber'] {
+  --glass-h1: 70;
+  --glass-h2: 47;
+  --glass-h3: 70;
+}
+
+:where(.glass, .glass *)[data-tone='red'] {
+  --glass-h1: 25;
+  --glass-h2: 10;
+  --glass-h3: 25;
+}
+
+/* ---- Base ---- */
+
+.glass {
+  /* White-on-glass in any page scheme: Shift's text tokens resolve to their
+     dark-scheme (light) values inside every widget. */
+  color-scheme: dark;
+  position: relative;
+}
+
+/* The bloom. The wrapper takes the hover boost, the pseudo-element breathes,
+   so neither animation overrides the other. */
+.glass-glow {
+  position: absolute;
+  inset: -2px;
+  border-radius: var(--s-radius-2xl);
+  opacity: 0.67;
+  transition:
+    opacity var(--s-duration-300) var(--s-ease-out),
+    scale var(--s-duration-300) var(--s-ease-out);
+
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: linear-gradient(
+      to right,
+      oklch(0.7 0.17 var(--glass-h1) / 0.3),
+      oklch(0.7 0.17 var(--glass-h2) / 0.3),
+      oklch(0.7 0.17 var(--glass-h3) / 0.3)
+    );
+    filter: blur(24px);
+    animation: glass-breathe 4s ease-in-out infinite;
+  }
+}
+
+.glass:hover .glass-glow {
+  opacity: 1;
+  scale: 1.02;
+}
+
+.glass-card {
+  position: relative;
+  height: 100%;
+  padding: var(--s-space-4);
+  border: 1px solid oklch(1 0 0 / 0.2);
+  border-radius: var(--s-radius-2xl);
+  background: oklch(1 0 0 / 0.1);
+  box-shadow:
+    0 8px 32px oklch(0 0 0 / 0.37),
+    inset 0 1px 1px oklch(1 0 0 / 0.1);
+  color: var(--s-text-primary);
+  font-size: var(--s-text-sm);
+  backdrop-filter: blur(24px) saturate(1.4);
+
+  &[data-size='sm'] {
+    padding: var(--s-space-3);
+  }
+
+  &[data-size='lg'] {
+    padding: var(--s-space-5);
+  }
+
+  /* Top-lit sheen. The backdrop-filter makes the card a stacking context, so
+     z-index -1 still paints above its own fill but under the content. */
+  &::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    border-radius: inherit;
+    background: linear-gradient(oklch(1 0 0 / 0.2), transparent);
+    pointer-events: none;
+  }
+
+  :where(p, h3, ul, ol, dl, dd) {
+    margin: 0;
+    padding: 0;
+  }
+
+  :where(h3) {
+    font: inherit;
+  }
+
+  :where(ul, ol) {
+    list-style: none;
+  }
+}
+
+@keyframes glass-breathe {
+  0%,
+  100% {
+    opacity: 0.6;
+    scale: 0.98;
+  }
+  50% {
+    opacity: 0.9;
+    scale: 1;
+  }
+}
+
+@keyframes glass-pulse {
+  50% {
+    opacity: 0.5;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .glass-glow::before,
+  .glass-skeleton {
+    animation: none;
+  }
+}
+
+/* ---- Shared pieces ---- */
+
+.glass-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--s-space-2);
+}
+
+.glass-inline {
+  display: flex;
+  align-items: center;
+  gap: var(--s-space-2);
+}
+
+.glass-center {
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  text-align: center;
+}
+
+.glass-grow {
+  flex: 1;
+  min-width: 0;
+}
+
+.glass-truncate {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+.glass-title {
+  font-weight: var(--s-font-medium);
+}
+
+.glass-label {
+  color: var(--s-text-secondary);
+  font-size: var(--s-text-sm);
+}
+
+.glass-meta {
+  display: flex;
+  align-items: center;
+  gap: var(--s-space-1);
+  color: var(--s-text-tertiary);
+  font-size: var(--s-text-xs);
+}
+
+.glass-accent {
+  color: var(--glass-accent);
+  font-weight: var(--s-font-medium);
+}
+
+.glass-gap {
+  margin-bottom: var(--s-space-3);
+}
+
+.glass-divider {
+  margin-top: var(--s-space-3);
+  padding-top: var(--s-space-3);
+  border-top: 1px solid oklch(1 0 0 / 0.1);
+}
+
+.glass-figure {
+  font-weight: var(--s-font-light);
+  font-size: var(--s-text-3xl);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+
+  &[data-size='2xl'] {
+    font-size: var(--s-text-2xl);
+  }
+
+  &[data-size='4xl'] {
+    font-size: var(--s-text-4xl);
+  }
+
+  &[data-size='5xl'] {
+    font-size: var(--s-text-5xl);
+  }
+
+  /* Shift's scale tops out at 5xl; this is the 6xl step it skips. */
+  &[data-size='6xl'] {
+    font-size: 3.75rem;
+  }
+}
+
+.glass-list {
+  display: grid;
+  gap: var(--s-space-2);
+}
+
+.glass-empty {
+  padding-block: var(--s-space-4);
+  color: var(--s-text-tertiary);
+  text-align: center;
+}
+
+.glass-skeleton {
+  width: 100%;
+  min-width: 4rem;
+  border-radius: var(--s-radius-lg);
+  background: oklch(1 0 0 / 0.08);
+  animation: glass-pulse 2s ease-in-out infinite;
+}
+
+/* Tinted by its own `data-tone`, or the widget's when it has none. */
+.glass-sky {
+  flex: none;
+  color: oklch(0.84 0.13 var(--glass-h1));
+}
+
+.glass-tile {
+  display: grid;
+  place-items: center;
+  padding: var(--s-space-2);
+  border-radius: var(--s-radius-xl);
+  background: oklch(1 0 0 / 0.1);
+}
+
+/* Shift buttons, re-inked for glass. Unlayered, so these beat `shift.core`. */
+.glass [s-btn] {
+  --_btn-text: var(--s-text-secondary);
+  border-radius: var(--s-radius-full);
+
+  &:hover:not(:disabled) {
+    --_btn-bg: oklch(1 0 0 / 0.15);
+    --_btn-text: var(--s-text-primary);
+  }
+}
+
+/* ---- Calendar ---- */
+
+.glass-calendar-title {
+  font-weight: var(--s-font-medium);
+}
+
+.glass-calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: var(--s-space-1);
+  margin-top: var(--s-space-3);
+  text-align: center;
+}
+
+.glass-weekday {
+  padding-block: var(--s-space-1);
+  color: var(--s-text-tertiary);
+  font-weight: var(--s-font-medium);
+  font-size: var(--s-text-xs);
+  text-decoration: none;
+}
+
+.glass-day {
+  aspect-ratio: 1;
+  padding: 0;
+  border: 0;
+  border-radius: var(--s-radius-full);
+  background: transparent;
+  color: var(--s-text-secondary);
+  font: inherit;
+  font-size: var(--s-text-xs);
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+  transition:
+    background-color var(--s-duration-150) var(--s-ease-out),
+    color var(--s-duration-150) var(--s-ease-out);
+
+  &:hover {
+    background: oklch(1 0 0 / 0.15);
+  }
+
+  &[aria-current='date'] {
+    box-shadow: inset 0 0 0 1px oklch(0.74 0.16 var(--glass-h1) / 0.6);
+  }
+
+  &[aria-pressed='true'] {
+    background: oklch(1 0 0 / 0.25);
+    color: var(--s-text-primary);
+    font-weight: var(--s-font-medium);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--glass-accent);
+    outline-offset: 1px;
+  }
+}
+
+.glass-compact-date {
+  display: flex;
+  gap: var(--s-space-2);
+  color: var(--s-text-secondary);
+  font-size: var(--s-text-base);
+}
+
+.glass-events-head {
+  align-items: flex-start;
+  margin-bottom: var(--s-space-4);
+}
+
+.glass-event {
+  display: flex;
+  align-items: center;
+  gap: var(--s-space-3);
+  padding: var(--s-space-2);
+  border: 1px solid oklch(1 0 0 / 0.05);
+  border-radius: var(--s-radius-lg);
+  background: oklch(1 0 0 / 0.05);
+  transition: background-color var(--s-duration-150) var(--s-ease-out);
+
+  &:hover {
+    background: oklch(1 0 0 / 0.1);
+  }
+}
+
+.glass-event-bar {
+  flex: none;
+  width: 4px;
+  height: var(--s-space-8);
+  border-radius: var(--s-radius-full);
+  background: var(--glass-accent);
+}
+
+/* ---- Clocks ---- */
+
+.glass-dial {
+  display: block;
+  width: 8rem;
+
+  &[data-size='sm'] {
+    width: 6rem;
+  }
+
+  &[data-size='lg'] {
+    width: 9rem;
+  }
+}
+
+.glass-dial-face {
+  fill: oklch(1 0 0 / 0.05);
+  stroke: oklch(1 0 0 / 0.2);
+  stroke-width: 0.75;
+}
+
+.glass-dial-number {
+  fill: var(--s-text-secondary);
+  font-weight: var(--s-font-light);
+  font-size: 9px;
+  text-anchor: middle;
+  dominant-baseline: central;
+}
+
+.glass-dial-tick {
+  fill: oklch(1 0 0 / 0.4);
+}
+
+.glass-dial-pin {
+  fill: oklch(1 0 0 / 0.9);
+}
+
+.glass-hand {
+  stroke: oklch(1 0 0 / 0.9);
+  stroke-linecap: round;
+
+  &[data-hand='hour'] {
+    stroke-width: 3;
+  }
+
+  &[data-hand='minute'] {
+    stroke: oklch(1 0 0 / 0.8);
+    stroke-width: 2;
+  }
+
+  &[data-hand='second'] {
+    stroke: var(--glass-accent);
+    stroke-width: 1;
+  }
+}
+
+.glass-digital {
+  display: flex;
+  align-items: baseline;
+  gap: var(--s-space-1);
+}
+
+.glass-digital-seconds {
+  color: var(--s-text-secondary);
+  font-size: var(--s-text-xl);
+  font-variant-numeric: tabular-nums;
+}
+
+.glass-world-city {
+  display: flex;
+  align-items: center;
+  gap: var(--s-space-2);
+  font-weight: var(--s-font-medium);
+}
+
+.glass-world-time {
+  color: var(--s-text-secondary);
+  font-size: var(--s-text-lg);
+  font-variant-numeric: tabular-nums;
+}
+
+.glass-readout {
+  margin-bottom: var(--s-space-4);
+  text-align: center;
+}
+
+.glass-transport {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--s-space-3);
+}
+
+/* Green to start, red to pause: the tone comes from the button's own data-tone. */
+.glass .glass-play {
+  --_btn-text: var(--glass-accent);
+  --_btn-bg: oklch(0.74 0.16 var(--glass-h1) / 0.2);
+  padding: var(--s-space-3);
+
+  &:hover:not(:disabled) {
+    --_btn-bg: oklch(0.74 0.16 var(--glass-h1) / 0.3);
+    --_btn-text: var(--glass-accent);
+  }
+
+  /* The play triangle's mass sits left of its box; nudge it to look centred. */
+  &[data-tone='green'] svg {
+    translate: 1px 0;
+  }
+}
+
+/* ---- Rings (timer, circular progress) ---- */
+
+.glass-ring {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 7rem;
+  margin: 0 auto var(--s-space-4);
+
+  &[data-size] {
+    margin: 0;
+  }
+
+  &[data-size='sm'] {
+    width: 8rem;
+  }
+
+  &[data-size='md'] {
+    width: 10rem;
+  }
+
+  &[data-size='lg'] {
+    width: 12rem;
+  }
+
+  svg {
+    width: 100%;
+    rotate: -90deg;
+  }
+}
+
+.glass-ring-track,
+.glass-ring-fill {
+  fill: none;
+  stroke-width: 5;
+}
+
+.glass-ring-track {
+  stroke: oklch(1 0 0 / 0.1);
+}
+
+.glass-ring-fill {
+  stroke: var(--glass-accent);
+  stroke-linecap: round;
+}
+
+.glass-ring-label {
+  position: absolute;
+  display: grid;
+  justify-items: center;
+  gap: var(--s-space-1);
+}
+
+/* ---- Stats ---- */
+
+.glass-stat-head {
+  align-items: flex-start;
+  margin-bottom: var(--s-space-3);
+}
+
+.glass-stat-icon {
+  display: flex;
+  color: var(--s-text-tertiary);
+}
+
+.glass-trend {
+  display: flex;
+  align-items: center;
+  gap: var(--s-space-1);
+  margin-top: var(--s-space-2);
+  color: var(--s-text-tertiary);
+  font-size: var(--s-text-xs);
+
+  &[data-trend='increase'] {
+    color: var(--s-state-success);
+  }
+
+  &[data-trend='decrease'] {
+    color: var(--s-state-danger);
+  }
+
+  span {
+    margin-left: var(--s-space-1);
+    color: var(--s-text-tertiary);
+  }
+}
+
+.glass-metric {
+  font-weight: var(--s-font-medium);
+}
+
+.glass-meter {
+  height: var(--s-space-2);
+  overflow: clip;
+  border-radius: var(--s-radius-full);
+  background: oklch(1 0 0 / 0.1);
+}
+
+.glass-meter-fill {
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(to right, oklch(0.7 0.17 var(--glass-h1)), oklch(0.7 0.17 var(--glass-h2)));
+}
+
+.glass-meter-note {
+  margin-top: var(--s-space-2);
+}
+
+/* ---- Weather ---- */
+
+.glass-weather-now {
+  gap: var(--s-space-3);
+  margin-top: var(--s-space-2);
+}
+
+.glass-forecast-now {
+  margin-block: var(--s-space-3) var(--s-space-4);
+  padding-bottom: var(--s-space-4);
+  border-bottom: 1px solid oklch(1 0 0 / 0.1);
+}
+
+.glass-readings {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--s-space-3);
+
+  dd {
+    font-weight: var(--s-font-medium);
+  }
+}
+
+.glass-forecast-day {
+  gap: var(--s-space-2);
+  border-color: transparent;
+}
+
+.glass-temps {
+  display: flex;
+  flex: none;
+  gap: var(--s-space-2);
+  font-weight: var(--s-font-medium);
+  font-variant-numeric: tabular-nums;
+
+  span {
+    color: var(--s-text-tertiary);
+    font-weight: var(--s-font-normal);
+  }
+}
+
+.glass-hourly {
+  display: flex;
+  gap: var(--s-space-2);
+  margin-top: var(--s-space-8);
+
+  li {
+    display: grid;
+    flex: 1;
+    justify-items: center;
+    gap: var(--s-space-2);
+  }
+}
+
+.glass-hourly-track {
+  display: flex;
+  align-items: flex-end;
+  width: 100%;
+  height: 6rem;
+}
+
+.glass-hourly-bar {
+  position: relative;
+  width: 100%;
+  border-radius: var(--s-radius-lg) var(--s-radius-lg) 0 0;
+  background: linear-gradient(to top, oklch(0.7 0.14 215 / 0.4), oklch(0.62 0.2 260 / 0.4));
+
+  span {
+    position: absolute;
+    bottom: calc(100% + var(--s-space-1));
+    left: 50%;
+    translate: -50% 0;
+    font-weight: var(--s-font-medium);
+    font-size: var(--s-text-xs);
+  }
+}
+
+.glass-range-row {
+  display: grid;
+  grid-template-columns: 2.5rem auto 2rem minmax(2rem, 1fr) 2rem;
+  align-items: center;
+  gap: var(--s-space-2);
+  font-variant-numeric: tabular-nums;
+
+  > :nth-child(3) {
+    justify-content: flex-end;
+  }
+}
+
+.glass-range {
+  position: relative;
+  height: 4px;
+  border-radius: var(--s-radius-full);
+  background: oklch(1 0 0 / 0.1);
+
+  span {
+    position: absolute;
+    inset-block: 0;
+    border-radius: inherit;
+    background: linear-gradient(to right, oklch(0.72 0.14 245), oklch(0.8 0.16 75));
+  }
+}
+
+/* ---- Demo ---- */
+
+/* Masonry by multi-column: widgets of any height pack without a span table. */
+.glass-demo {
+  width: min(100%, 64rem);
+  columns: 15rem;
+  column-gap: var(--s-space-5);
+
+  > .glass {
+    margin-bottom: var(--s-space-5);
+    break-inside: avoid;
+  }
+}

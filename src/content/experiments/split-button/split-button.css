@@ -1,0 +1,119 @@
+/* Imported from a React island, outside any Astro scope, so it is styled from
+   this global file with a `split-button-` prefix. */
+
+.split-button {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  max-width: 100%;
+  overflow-x: auto;
+  border-radius: var(--s-radius-full);
+  /* The border is an inset shadow, not a `border`: a real border would add to
+     the measured width the surface springs to. */
+  background: color-mix(in oklch, var(--s-surface-base) 70%, transparent);
+  box-shadow:
+    inset 0 0 0 1px var(--s-border-default),
+    var(--s-shadow-sm);
+  color: var(--s-text-primary);
+  /* Hidden while the width springs, so the swapped-in content can't flash a
+     scrollbar before the surface has grown to fit it. */
+  &[data-animating] {
+    overflow-x: hidden;
+  }
+}
+
+.split-button-content {
+  display: inline-flex;
+  flex-shrink: 0;
+
+  &[data-open] {
+    padding: var(--s-space-1);
+  }
+}
+
+.split-button-choices {
+  display: flex;
+  align-items: center;
+  gap: var(--s-space-1);
+}
+
+.split-button-divider {
+  flex-shrink: 0;
+  width: 1px;
+  height: var(--s-space-5);
+  background: var(--s-border-default);
+}
+
+.split-button-trigger,
+.split-button-back,
+.split-button-option {
+  flex-shrink: 0;
+  border-radius: var(--s-radius-full);
+  font-size: var(--s-text-sm);
+  white-space: nowrap;
+  cursor: pointer;
+  /* `scale`, not `transform`, so the press never fights anything Motion writes. */
+  transition-property: background-color, color, scale;
+  transition-duration: var(--s-duration-150);
+  transition-timing-function: var(--s-ease-out);
+
+  &:active {
+    scale: 0.96;
+  }
+
+  /* Inset: the surface clips its overflow, which would cut an outer ring. */
+  &:focus-visible {
+    outline: 2px solid var(--s-focus-ring);
+    outline-offset: -2px;
+  }
+
+  &:disabled {
+    opacity: 0.45;
+    pointer-events: none;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    &:active {
+      scale: none;
+    }
+  }
+}
+
+.split-button-trigger {
+  display: flex;
+  align-items: center;
+  gap: var(--s-space-2);
+  height: var(--s-space-12);
+  padding-inline: var(--s-space-5);
+  font-weight: var(--s-font-medium);
+}
+
+.split-button-icon {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+
+.split-button-back,
+.split-button-option {
+  height: var(--s-space-10);
+
+  &:hover {
+    background: var(--s-surface-sunken);
+  }
+}
+
+.split-button-back {
+  display: grid;
+  place-items: center;
+  width: var(--s-space-10);
+  color: var(--s-text-secondary);
+
+  &:hover {
+    color: var(--s-text-primary);
+  }
+}
+
+.split-button-option {
+  padding-inline: var(--s-space-3);
+}

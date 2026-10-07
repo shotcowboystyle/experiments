@@ -1,0 +1,14 @@
+---
+title: Gooey Cursor Highlight
+description: A liquid highlighter that trails the pointer and pours itself over whatever it finds.
+pubDate: 2026-10-02
+demo: ./GooeyCursor.astro
+---
+
+Move the mouse over the stage: a white drop with a black centre runs after the pointer, stretching into goo on the way and settling back into circles when you stop. Hover any of the four controls and the drop pours itself over the element.
+
+## How it works
+
+Three elements chase the pointer with `gsap.quickTo` at three different lags: the black dot is almost glued to it, the white blob trails behind, and a smaller trail circle trails the blob. The blob and trail share a layer under an SVG goo filter (a Gaussian blur, then an alpha threshold through `feColorMatrix`), so while they are apart the blurred halos fuse into one stretched drop, and once the lag catches up they snap back into a single circle. The dot keeps its own layer, where the filter cannot blur its black into the white.
+
+Hovering a `data-gch-target` reads the control's box and animates the blob's position, size and radius onto it, with the trail sent to the same centre to be swallowed. Both cursor layers sit beneath the content, so the control's text simply flips to the stage color while it is lit. Leaving animates the blob back to a circle with an elastic ease, and the quick position animations take over again on the next move. The native cursor is never hidden, and the whole thing is gated behind `(hover: hover)` and no reduced-motion preference.

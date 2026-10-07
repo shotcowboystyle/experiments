@@ -1,0 +1,14 @@
+---
+title: Cyclic Sentence Circle
+description: The end is never the end is never...
+pubDate: 2026-09-15
+demo: ./CyclicCircleSentence.astro
+---
+
+A sentence with no last word, set as seven marquee lines that run against each other. Scroll to throw them faster; scroll back up to run them in reverse.
+
+## How it works
+
+Each line holds two identical copies of the sentence, so shifting the track by -50% lands exactly where it began. A `gsap.ticker` callback moves every line each frame, and a GSAP `Observer` feeds it wheel and swipe distance and direction: the boost bleeds off over a few frames and the speed eases toward it, so a flick surges and settles instead of jumping.
+
+The accent always covers a whole phrase from a fixed set ("this end", "is never", "the end"), picked at random per sentence. Two circles in the page ink sit over the lines, each reaching exactly two lines in, leaving three clear lines between their arcs.

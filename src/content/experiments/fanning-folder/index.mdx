@@ -1,0 +1,14 @@
+---
+title: Fanning Folder
+description: A folder that fans out its files when you open it
+pubDate: 2026-09-15
+demo: ./Folder.astro
+---
+
+Open the folder and its five files rise out in a staggered fan, each tilted at its own angle, with a search bar and a file count popping in above.
+
+## How it works
+
+The whole folder is a label wrapped around a hidden checkbox, so a click, a tap, or Space toggles it with no JavaScript. Every moving part hangs off `:checked ~` selectors, and staggered `transition-delay` values send the files out one after another.
+
+The front panel tips back with `rotateX` inside a `perspective`, which is what sells the lid opening.

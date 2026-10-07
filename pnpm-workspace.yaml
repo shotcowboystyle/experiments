@@ -1,0 +1,9 @@
+# Not a workspace — pnpm reads build allowances and save settings from here.
+saveExact: true
+savePrefix: ''
+
+allowBuilds:
+  esbuild: true
+  lefthook: true
+  sharp: false
+  workerd: true

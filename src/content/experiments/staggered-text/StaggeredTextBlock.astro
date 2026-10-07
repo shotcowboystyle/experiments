@@ -1,0 +1,26 @@
+---
+import { StaggeredText } from "./StaggeredText";
+---
+
+<div class="demo" data-testid="staggered-text-demo">
+  <StaggeredText as="h2" className="hero" client:visible text="Hover every letter" />
+  <StaggeredText as="p" className="lede" client:visible text="The wave starts wherever you land." />
+</div>
+
+<style>
+  .demo {
+    text-align: center;
+  }
+
+  .demo :global(.hero) {
+    color: var(--page-ink);
+    font-weight: var(--s-font-bold);
+    font-size: clamp(var(--s-text-3xl), 8vw, 5rem);
+    line-height: var(--s-leading-tight);
+  }
+
+  .demo :global(.lede) {
+    color: var(--page-muted);
+    font-size: var(--s-text-xl);
+  }
+</style>

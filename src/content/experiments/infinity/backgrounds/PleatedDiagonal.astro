@@ -1,0 +1,75 @@
+---
+---
+
+<div class="pleated-diagonal-background">
+  <div class="pattern-bg">
+    <svg
+      preserveAspectRatio="xMidYMid slice"
+      height="100%"
+      width="100%"
+      class="cube-svg"
+      viewBox="0 0 120 104"
+    >
+      <defs>
+        <linearGradient y2="100%" x2="100%" y1="0%" x1="0%" id="cube-dark">
+          <stop stop-color="#232526" offset="0%"></stop>
+          <stop stop-color="#414345" offset="100%"></stop>
+        </linearGradient>
+        <linearGradient y2="0%" x2="100%" y1="100%" x1="0%" id="cube-mid">
+          <stop stop-color="#4b6cb7" offset="0%"></stop>
+          <stop stop-color="#182848" offset="100%"></stop>
+        </linearGradient>
+        <linearGradient y2="100%" x2="0%" y1="0%" x1="100%" id="cube-light">
+          <stop stop-color="#a8edea" offset="0%"></stop>
+          <stop stop-color="#fed6e3" offset="100%"></stop>
+        </linearGradient>
+      </defs>
+    </svg>
+  </div>
+</div>
+
+<style>
+  .pleated-diagonal-background {
+    background: #181c21;
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    display: flex;
+    align-items: stretch;
+    justify-content: stretch;
+  }
+
+  .pattern-bg {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: repeating-linear-gradient(
+      135deg,
+      #232526 0px,
+      #232526 60px,
+      #23252699 70px,
+      #414345 130px
+    );
+  }
+
+  .cube-svg {
+    position: absolute;
+    width: 200%;
+    height: 200%;
+    left: -30%;
+    top: -20%;
+    background: transparent;
+    opacity: 0.7;
+    z-index: 1;
+    animation: cubeMove 18s linear infinite alternate;
+  }
+
+  @keyframes cubeMove {
+    from {
+      transform: translateY(0) scale(1);
+    }
+    to {
+      transform: translateY(-20%) scale(1.02) rotate(1deg);
+    }
+  }
+</style>

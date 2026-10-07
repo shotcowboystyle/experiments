@@ -1,0 +1,181 @@
+---
+/**
+ * The looping demo clip on a gallery card. The poster is the clip's own first
+ * frame, so the swap is invisible; the video is only fetched once the card is
+ * near the viewport, and only ever plays while it is on screen.
+ *
+ * Poster and clip are picked up from public/experiments/previews/ at build
+ * time (`pnpm previews` writes the posters). With no poster the slot renders
+ * instead, so an uncaptured experiment still gets a deliberate tile.
+ *
+ * @example
+ * <BlockPreview slug="window-licker">Window Licker</BlockPreview>
+ */
+import { existsSync } from "node:fs";
+import path from "node:path";
+
+import type { HTMLAttributes } from "astro/types";
+
+import { withBase } from "~/lib/with-base";
+
+interface Props extends HTMLAttributes<"div"> {
+  slug: string;
+}
+
+const { slug, class: className, ...rest } = Astro.props;
+
+const previews = path.join(process.cwd(), "public/experiments/previews");
+const hasPoster = existsSync(path.join(previews, `${slug}.jpg`));
+const hasClip = hasPoster && existsSync(path.join(previews, `${slug}.mp4`));
+---
+
+<block-preview class:list={["block-preview", className]} {...rest}>
+  {
+    hasPoster ? (
+      <img
+        alt=""
+        decoding="async"
+        loading="lazy"
+        src={withBase(`/experiments/previews/${slug}.jpg`)}
+      />
+    ) : (
+      <span class="block-preview-empty">
+        <slot />
+      </span>
+    )
+  }
+
+  {
+    /* Inert until the card has been near the viewport, so the mp4 is never
+       requested for cards nobody scrolled to. */
+    hasClip && (
+      <template>
+        <video
+          aria-hidden="true"
+          loop
+          muted
+          playsinline
+          preload="none"
+          src={withBase(`/experiments/previews/${slug}.mp4`)}
+        />
+      </template>
+    )
+  }
+</block-preview>
+
+<script>
+  // A clip that starts itself is motion the reader did not ask for, so reduced
+  // motion gets the poster and no video request at all.
+  const reduced = matchMedia("(prefers-reduced-motion: reduce)");
+
+  class BlockPreview extends HTMLElement {
+    #video?: HTMLVideoElement;
+    #visible = false;
+    #observer = new IntersectionObserver(
+      ([entry]) => {
+        this.#visible = entry.isIntersecting;
+        this.#update();
+      },
+      { rootMargin: "200px", threshold: 0.2 },
+    );
+    #update = async () => {
+      if (!this.#visible || reduced.matches) {
+        this.#video?.pause();
+        return;
+      }
+      this.#video ??= this.#mount();
+
+      try {
+        await this.#video?.play();
+      } catch {
+        // Safe to ignore: rejects when a pause() lands before playback starts
+        // (fast scroll) — the next intersection retries.
+      }
+    };
+
+    connectedCallback() {
+      // No template means no clip; the poster is all there is.
+      if (!this.querySelector("template")) {
+        return;
+      }
+      this.#observer.observe(this);
+      reduced.addEventListener("change", this.#update);
+    }
+
+    disconnectedCallback() {
+      this.#observer.disconnect();
+      reduced.removeEventListener("change", this.#update);
+    }
+
+    #mount() {
+      const template = this.querySelector("template");
+      if (!template?.content?.firstElementChild) {
+        return;
+      }
+      const video =
+        template.content.firstElementChild.cloneNode() as HTMLVideoElement;
+
+      video.addEventListener("canplay", () => (this.dataset.ready = ""), {
+        once: true,
+      });
+      template.replaceWith(video);
+      return video;
+    }
+  }
+
+  customElements.define("block-preview", BlockPreview);
+</script>
+
+<style>
+  .block-preview {
+    position: relative;
+    display: block;
+    aspect-ratio: 1;
+    overflow: hidden;
+    border-radius: var(--s-radius-2xl);
+    background: var(--page-stage);
+    /* A halo rather than a border (the layout's `--page-halo`): reads as the
+       tile lifting off the page instead of being drawn onto it. */
+    box-shadow: var(--page-halo);
+    /* The image edge itself is pure black/white, never a tinted neutral that
+       picks up the surface and reads as dirt on the clip. */
+    outline: var(--page-edge);
+    outline-offset: -1px;
+    /* No hover treatment on the tile itself. The caption underlines, which is
+       the actual link signal, and one cue is the budget: these are tiles you
+       scan, each already playing a clip, so a lift and a halo change on top of
+       the underline read as noise rather than affordance. */
+  }
+
+  img,
+  video {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+
+  .block-preview-empty {
+    display: grid;
+    place-items: center;
+    height: 100%;
+    padding: var(--s-space-8);
+    color: var(--page-muted);
+    font-weight: 600;
+    font-size: 1.5rem;
+    line-height: 1.2;
+    letter-spacing: -0.02em;
+    text-align: center;
+    text-wrap: balance;
+  }
+
+  video {
+    opacity: 0;
+    transition: opacity 200ms ease-out;
+  }
+
+  [data-ready] video {
+    opacity: 1;
+  }
+</style>

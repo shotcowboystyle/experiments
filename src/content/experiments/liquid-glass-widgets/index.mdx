@@ -1,0 +1,16 @@
+---
+title: Liquid Glass Widgets
+description: A home-screen wall of frosted clocks, calendars, weather and stats, each floating over its own breathing glow.
+pubDate: 2026-10-05
+demo: ./LiquidGlassWidgetsBlock.astro
+---
+
+Eighteen widgets built on one frosted card: analog, digital and world clocks, a stopwatch and a timer, three calendars, four stat cards and six weather layouts. The calendar pages and picks days, the stopwatch and timer run, and the clocks keep real time.
+
+## How it works
+
+Every widget is a `GlassWidget`: a translucent card with a 24px `backdrop-filter` blur, a top-lit sheen and a hairline border, sitting over a gradient bloom that breathes between 60% and 90% opacity on a 4s loop. The bloom's colour comes from a `data-tone` attribute that sets three OKLCH hues, the first of which is also the accent for rings, bars and clock hands. Any element inside a widget can carry its own tone, which is how the event bars and weather icons are coloured.
+
+The cards spring in and lift 2px on hover with Motion springs set by `visualDuration`, so the entrance and the lift settle in a fixed time whatever their bounce. Meters, rings and the hourly bars fill on a spring with no bounce, since a bar that overshoots its value reads as wrong data. The glow's breathing is a CSS animation on a pseudo-element, and hovering brightens its wrapper, so the two never fight over the same property.
+
+The stopwatch and timer measure from timestamps instead of counting interval ticks, so a throttled background tab never loses time. Clocks read the time only after mounting, so the server never bakes its own clock into the HTML, and the world clock works out day or night from each city's own hour. With reduced motion the cards fade in without sliding or lifting, and the glow holds still.

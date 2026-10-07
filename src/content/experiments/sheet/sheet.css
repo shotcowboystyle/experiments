@@ -1,0 +1,246 @@
+/* The sheet renders in Vaul's portal on <body>, outside any Astro scope, so it
+   is styled from this global file with a `sheet-` prefix. Font sizes stay in
+   px: the per-stage heights in MultiStageSheet are measured against them, and
+   Shift's fluid type scale would drift them with the viewport. */
+
+.sheet-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9998;
+  background: color-mix(in oklch, var(--s-neutral-950) 40%, transparent);
+  backdrop-filter: blur(2px);
+}
+
+.sheet {
+  position: fixed;
+  inset-inline: var(--s-space-4);
+  bottom: var(--s-space-4);
+  z-index: 9999;
+  max-width: 361px;
+  margin-inline: auto;
+  overflow: hidden;
+  /* Concentric with the rows: their radius plus the sheet's inline padding. */
+  border-radius: calc(var(--s-radius-2xl) + var(--s-space-6));
+  background: var(--s-surface-base);
+  color: var(--s-text-primary);
+  /* Layered depth disappears on a dark surface; a white ring carries it there. */
+  box-shadow: 0 0 0 1px light-dark(transparent, oklch(1 0 0 / 0.08));
+  outline: none;
+}
+
+.sheet-body {
+  padding: var(--s-space-2_5) var(--s-space-6) var(--s-space-6);
+}
+
+.sheet-close {
+  position: absolute;
+  top: var(--s-space-7);
+  right: var(--s-space-7);
+  z-index: 10;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: var(--s-space-8);
+  height: var(--s-space-8);
+  border-radius: var(--s-radius-full);
+  background: var(--s-surface-raised);
+  color: var(--s-text-secondary);
+
+  &:hover {
+    background: var(--s-surface-sunken);
+  }
+}
+
+/* ---- Buttons ----
+   `scale`, not `transform`: Motion writes `transform` inline on the close
+   button, and a CSS transition on the same property would fight it. */
+
+.sheet-close,
+.sheet-row,
+.sheet-pill {
+  transition-property: background-color, scale;
+  transition-duration: var(--s-duration-150);
+  transition-timing-function: var(--s-ease-out);
+
+  &:active {
+    scale: 0.96;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    &:active {
+      scale: none;
+    }
+  }
+}
+
+.sheet-row {
+  display: flex;
+  align-items: center;
+  gap: var(--s-space-3);
+  width: 100%;
+  height: var(--s-space-12);
+  padding-inline: var(--s-space-4);
+  border-radius: var(--s-radius-2xl);
+  background: var(--s-surface-raised);
+  color: var(--s-text-primary);
+  font-weight: var(--s-font-semibold);
+  font-size: 17px;
+  text-align: start;
+
+  &:hover {
+    background: var(--s-surface-sunken);
+  }
+
+  & svg {
+    color: var(--s-text-secondary);
+  }
+}
+
+.sheet-row-danger {
+  background: var(--s-state-danger-bg);
+  color: var(--s-state-danger);
+
+  &:hover {
+    background: light-dark(var(--s-danger-200), var(--s-danger-800));
+  }
+
+  & svg {
+    color: inherit;
+  }
+}
+
+.sheet-pill {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: var(--s-space-2);
+  width: 100%;
+  height: var(--s-space-12);
+  border-radius: var(--s-radius-full);
+  background: var(--s-surface-raised);
+  color: var(--s-text-primary);
+  font-weight: var(--s-font-semibold);
+  font-size: 19px;
+
+  &:hover {
+    background: var(--s-surface-sunken);
+  }
+}
+
+.sheet-pill-primary {
+  background: var(--s-interactive-primary);
+  color: var(--s-text-inverse);
+
+  &:hover {
+    background: var(--s-interactive-primary-hover);
+  }
+}
+
+.sheet-pill-danger {
+  background: var(--s-state-danger);
+  color: var(--s-text-inverse);
+
+  &:hover {
+    background: light-dark(var(--s-danger-800), var(--s-danger-200));
+  }
+}
+
+/* ---- Stage content ---- */
+
+.sheet-menu-header {
+  display: flex;
+  align-items: center;
+  height: 72px;
+  margin-bottom: var(--s-space-4);
+  padding-left: var(--s-space-2);
+  border-bottom: 1px solid var(--s-border-muted);
+}
+
+.sheet-menu-title {
+  font-weight: var(--s-font-semibold);
+  font-size: 19px;
+}
+
+.sheet-menu {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-space-3);
+}
+
+.sheet-detail {
+  padding-inline: var(--s-space-2);
+}
+
+.sheet-detail-header {
+  margin-top: 21px;
+  padding-bottom: var(--s-space-6);
+  border-bottom: 1px solid var(--s-border-muted);
+}
+
+.sheet-hero-icon {
+  display: flex;
+  justify-content: center;
+  margin-bottom: var(--s-space-4);
+  color: var(--s-text-tertiary);
+}
+
+.sheet-danger-badge {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: var(--s-space-12);
+  height: var(--s-space-12);
+  border-radius: var(--s-radius-full);
+  background: var(--s-state-danger-bg);
+  color: var(--s-state-danger);
+}
+
+.sheet-title {
+  font-weight: var(--s-font-semibold);
+  font-size: 22px;
+  /* Shift sets headings to 1.2; the stage heights assume body leading. */
+  line-height: var(--s-leading-normal);
+}
+
+.sheet-text {
+  margin-top: var(--s-space-3);
+  color: var(--s-text-tertiary);
+  font-size: 17px;
+  line-height: 24px;
+}
+
+.sheet-center {
+  text-align: center;
+}
+
+.sheet-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--s-space-4);
+  margin-top: var(--s-space-6);
+
+  & li {
+    display: flex;
+    align-items: center;
+    gap: var(--s-space-3);
+    color: var(--s-text-secondary);
+    font-weight: var(--s-font-medium);
+    font-size: 15px;
+  }
+
+  & svg {
+    color: var(--s-text-tertiary);
+  }
+}
+
+.sheet-actions {
+  display: flex;
+  gap: var(--s-space-4);
+  margin-top: var(--s-space-7);
+}
+
+/* The remove stage has no divider under its heading. */
+.sheet-detail-header-plain {
+  padding-bottom: 0;
+  border-bottom: none;
+}
