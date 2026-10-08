@@ -127,7 +127,6 @@ const Carousel = ({
   const x = useMotionValue(0);
   const [isHovered, setIsHovered] = useState<boolean>(false);
   const [isJumping, setIsJumping] = useState<boolean>(false);
-  const [isAnimating, setIsAnimating] = useState<boolean>(false);
 
   const containerRef = useRef<HTMLDivElement>(null);
   useEffect(() => {
@@ -173,13 +172,8 @@ const Carousel = ({
 
   const effectiveTransition = isJumping ? { duration: 0 } : SPRING_OPTIONS;
 
-  const handleAnimationStart = () => {
-    setIsAnimating(true);
-  };
-
   const handleAnimationComplete = () => {
     if (!loop || itemsForRender.length <= 1) {
-      setIsAnimating(false);
       return;
     }
     const lastCloneIndex = itemsForRender.length - 1;
@@ -189,10 +183,7 @@ const Carousel = ({
       const target = 1;
       setPosition(target);
       x.set(-target * trackItemOffset);
-      requestAnimationFrame(() => {
-        setIsJumping(false);
-        setIsAnimating(false);
-      });
+      requestAnimationFrame(() => setIsJumping(false));
       return;
     }
 
@@ -201,14 +192,8 @@ const Carousel = ({
       const target = items.length;
       setPosition(target);
       x.set(-target * trackItemOffset);
-      requestAnimationFrame(() => {
-        setIsJumping(false);
-        setIsAnimating(false);
-      });
-      return;
+      requestAnimationFrame(() => setIsJumping(false));
     }
-
-    setIsAnimating(false);
   };
 
   const handleDragEnd = (_: MouseEvent | TouchEvent | PointerEvent, info: PanInfo): void => {
@@ -254,7 +239,9 @@ const Carousel = ({
     >
       <motion.div
         className="carousel-track"
-        drag={isAnimating ? false : 'x'}
+        // Always draggable: gating on an "animating" flag stuck it off whenever
+        // an animation was interrupted and never reported completion.
+        drag="x"
         {...dragProps}
         style={{
           gap: `${GAP}px`,
@@ -266,7 +253,6 @@ const Carousel = ({
         onDragEnd={handleDragEnd}
         animate={{ x: -(position * trackItemOffset) }}
         transition={effectiveTransition}
-        onAnimationStart={handleAnimationStart}
         onAnimationComplete={handleAnimationComplete}
       >
         {itemsForRender.map((item, index) => (

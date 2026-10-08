@@ -34,7 +34,12 @@
   overflow: clip;
   padding: var(--s-space-6) var(--s-space-6) 0;
   border-radius: 35px;
-  box-shadow: 0 0 10px 1px var(--s-neutral-300);
+  /* A light neutral glow reads as a halo on dark; there the card gets a
+     deep drop shadow and a faint rim instead. */
+  box-shadow:
+    0 0 10px 1px light-dark(var(--s-neutral-300), transparent),
+    0 12px 32px -8px light-dark(transparent, oklch(0 0 0 / 0.7)),
+    0 0 0 1px light-dark(transparent, oklch(1 0 0 / 0.08));
 }
 
 .stats-widget-slide {
@@ -109,5 +114,8 @@
   height: var(--s-space-10);
   margin-top: calc(var(--s-space-8) * -1);
   border-radius: 0 0 35px 35px;
-  box-shadow: 0 0 5px 1px var(--s-neutral-300);
+  box-shadow:
+    0 0 5px 1px light-dark(var(--s-neutral-300), transparent),
+    0 8px 16px -6px light-dark(transparent, oklch(0 0 0 / 0.6)),
+    0 0 0 1px light-dark(transparent, oklch(1 0 0 / 0.06));
 }
