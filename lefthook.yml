@@ -32,6 +32,10 @@ pre-commit:
     - name: cspell
       run: pnpm exec cspell --config .config/cspell.json --no-progress --no-must-find-files {staged_files}
 
+    - name: lychee
+      run: mise exec -- lychee --config lychee.toml {staged_files}
+      glob: '**/*.{md,mdx,html,astro}'
+
     - name: betterleaks
       run: mise exec -- betterleaks git --pre-commit --staged
 
