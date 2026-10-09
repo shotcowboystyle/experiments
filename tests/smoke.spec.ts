@@ -425,3 +425,12 @@ test.describe('on a touch phone', () => {
     await expect(field).toHaveCSS('font-size', '16px');
   });
 });
+
+test('experiment page carries canonical, social image and author structured data', async ({ page }) => {
+  await page.goto('./carousel/');
+  await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', /\/experiments\/carousel\/$/u);
+  await expect(page.locator('meta[property="og:image"]')).toHaveAttribute('content', /\/previews\/carousel\.jpg$/u);
+  const ld = JSON.parse((await page.locator('script[type="application/ld+json"]').textContent()) ?? '{}');
+  expect(ld['@type']).toBe('CreativeWork');
+  expect(ld.author.name).toBe('Curtis Blanton');
+});

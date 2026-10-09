@@ -28,4 +28,6 @@ export default defineConfig({
   ],
   output: 'static',
   site: process.env.SITE_URL || 'https://shotcowboystyle.github.io',
+  // Pages 301s the bare path to the slash; keep URLs and the sitemap on the slash form.
+  trailingSlash: 'always',
 });

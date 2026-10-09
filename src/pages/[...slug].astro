@@ -10,6 +10,7 @@ import PanelLeft from "@lucide/astro/icons/panel-left";
 import Sun from "@lucide/astro/icons/sun";
 
 import Base from "~/layouts/Base.astro";
+import { posterPath } from "~/lib/poster";
 import { sortByDate } from "~/lib/sort-by-date";
 import { withBase } from "~/lib/with-base";
 
@@ -35,7 +36,12 @@ const demoModule = demoPath ? await demos[demoPath]() : undefined;
 const Demo = demoModule?.default;
 ---
 
-<Base title={entry.data.title} description={entry.data.description}>
+<Base
+  title={entry.data.title}
+  description={entry.data.description}
+  image={posterPath(entry.id)}
+  pubDate={entry.data.pubDate}
+>
   <div class="shell" data-view={Demo ? "stage" : "split"}>
     <div class="dock dock-start">
       <a class="ctl" href={withBase("/")} aria-label="Back to experiments">

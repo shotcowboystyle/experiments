@@ -1,15 +1,48 @@
 ---
 import "@shift-css/core";
 
-import { SITE_DESCRIPTION, SITE_TITLE } from "~/consts";
+import { AUTHOR, HOME_TITLE, SITE_DESCRIPTION, SITE_TITLE } from "~/consts";
 import { withBase } from "~/lib/with-base";
 
 interface Props {
   title: string;
   description?: string;
+  /** Base-relative social image, e.g. the experiment's poster. */
+  image?: string;
+  /** Set on an experiment; marks the page as a dated work rather than the hub. */
+  pubDate?: Date;
 }
 
-const { title, description } = Astro.props;
+const { title, description = SITE_DESCRIPTION, image, pubDate } = Astro.props;
+
+const isHome = title === SITE_TITLE;
+const fullTitle = isHome ? HOME_TITLE : `${title} · ${SITE_TITLE}`;
+const canonical = new URL(Astro.url.pathname, Astro.site).href;
+const imageUrl = image && new URL(image, Astro.site).href;
+const hubUrl = new URL(withBase("/"), Astro.site).href;
+const author = { "@id": `${AUTHOR.url}#person`, "@type": "Person", name: AUTHOR.name, url: AUTHOR.url };
+
+const jsonLd = pubDate
+  ? {
+      "@context": "https://schema.org",
+      "@type": "CreativeWork",
+      author,
+      datePublished: pubDate.toISOString().slice(0, 10),
+      description,
+      image: imageUrl,
+      isPartOf: { "@id": hubUrl },
+      name: title,
+      url: canonical,
+    }
+  : {
+      "@context": "https://schema.org",
+      "@id": hubUrl,
+      "@type": "CollectionPage",
+      author,
+      description,
+      name: HOME_TITLE,
+      url: canonical,
+    };
 ---
 
 <!doctype html>
@@ -17,9 +50,19 @@ const { title, description } = Astro.props;
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="description" content={description ?? SITE_DESCRIPTION} />
+    <meta name="description" content={description} />
+    <meta name="author" content={AUTHOR.name} />
+    <link rel="canonical" href={canonical} />
     <link rel="icon" type="image/svg+xml" href={withBase("/favicon.svg")} />
-    <title>{title === SITE_TITLE ? title : `${title} · ${SITE_TITLE}`}</title>
+    <title>{fullTitle}</title>
+    <meta property="og:type" content={pubDate ? "article" : "website"} />
+    <meta property="og:site_name" content={HOME_TITLE} />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    {imageUrl && <meta property="og:image" content={imageUrl} />}
+    <meta name="twitter:card" content={imageUrl ? "summary_large_image" : "summary"} />
+    <script is:inline type="application/ld+json" set:html={JSON.stringify(jsonLd).replaceAll("<", "\\u003c")} />
     <!-- Restores the dock's scheme choice before first paint; unset follows the OS. -->
     <!--
       Arriving from the portfolio (same origin, outside /experiments/) gets its
