@@ -44,6 +44,14 @@ const { title, description } = Astro.props;
         // Safe to continue: storage blocked just means the OS scheme applies.
       }
     </script>
+    <!-- Same Umami site as the portfolio: one origin, one dashboard, split by path. -->
+    <script
+      is:inline
+      defer
+      src="https://cloud.umami.is/script.js"
+      data-website-id="1427b780-3626-4e70-87a5-09b06ce64b8e"
+      data-domains="shotcowboystyle.github.io"
+    ></script>
   </head>
   <body>
     <slot />
