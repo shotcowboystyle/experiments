@@ -1,4 +1,4 @@
-# Link checker config. CI runs lychee-action; locally: brew install lychee && lychee .
+# Link checker config. CI runs lychee-action; locally: mise exec -- lychee .
 no_progress = true
 exclude = ["^https?://localhost", "^https?://127\\.0\\.0\\.1", "^https?://example\\.com"]
 exclude_path = ["node_modules", "dist", ".astro"]
