@@ -10,8 +10,11 @@ module.exports = {
     },
     collect: {
       numberOfRuns: 2,
-      staticDistDir: './dist',
-      url: ['/', '/hello-world/'],
+      // astro preview serves dist under the /experiments base; a plain static
+      // server would put it at / and every asset URL would 404.
+      startServerCommand: 'pnpm exec astro preview --port 4321',
+      startServerReadyPattern: 'Local',
+      url: ['http://localhost:4321/experiments/', 'http://localhost:4321/experiments/siri-orb/'],
     },
     upload: {
       target: 'temporary-public-storage',
