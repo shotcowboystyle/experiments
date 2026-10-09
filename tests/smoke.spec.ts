@@ -18,6 +18,24 @@ test('index lists experiments and detail page links back', async ({ page }) => {
   await expect(page).toHaveURL('./');
 });
 
+test('dock back arrow returns to the experiments list', async ({ page }) => {
+  await page.goto('./sheet/');
+  await page.getByRole('link', { name: 'Back to experiments' }).click();
+  await expect(page).toHaveURL('./');
+});
+
+test.describe('on a phone', () => {
+  test.use({ viewport: { height: 844, width: 390 } });
+
+  test('details scrolls the panel into view', async ({ page }) => {
+    await page.goto('./sheet/');
+    await page.waitForLoadState();
+    await page.getByRole('button', { name: 'Details' }).click();
+    await expect(page.locator('#info')).toBeInViewport();
+    await expect.poll(() => page.evaluate(() => window.scrollY)).toBeGreaterThan(0);
+  });
+});
+
 test('stage shrinks with the details panel instead of snapping', async ({ page }) => {
   await page.goto('./sheet/');
   await page.waitForLoadState();
@@ -241,6 +259,16 @@ test('hold to delete fires only after a full hold', async ({ page }) => {
   await expect(button).toHaveAccessibleName('Hold to delete', { timeout: 3000 });
 });
 
+test('hold to delete blocks the long-press menu that would cancel a touch hold', async ({ page }) => {
+  await page.goto('./hold-to-delete-button/');
+  const demo = page.getByTestId('hold-to-delete-button-demo');
+  await demo.locator('astro-island:not([ssr])').waitFor({ state: 'attached' });
+  const prevented = await demo
+    .getByRole('button')
+    .evaluate((button) => !button.dispatchEvent(new MouseEvent('contextmenu', { bubbles: true, cancelable: true })));
+  expect(prevented).toBe(true);
+});
+
 test('staggered text rolls from the hovered letter and back', async ({ page }) => {
   await page.goto('./staggered-text/');
   const demo = page.getByTestId('staggered-text-demo');
@@ -344,4 +372,56 @@ test('liquid glass calendar pages and picks days, and the stopwatch runs', async
   await demo.getByRole('button', { name: 'Pause stopwatch' }).click();
   await demo.getByRole('button', { name: 'Reset stopwatch' }).click();
   await expect(readout).toHaveText('00:00.00');
+});
+
+test('carousel keeps swiping after a swipe and after a control change', async ({ page }) => {
+  await page.goto('./carousel/');
+  await page.locator('astro-island:not([ssr])').waitFor({ state: 'attached' });
+  // The container, not the track: the track's box moves with its translate.
+  const container = page.locator('.carousel-container');
+  const swipe = async () => {
+    const box = await container.boundingBox();
+    if (!box) {
+      throw new Error('carousel not rendered');
+    }
+    const y = box.y + box.height / 2;
+    await page.mouse.move(box.x + box.width * 0.7, y);
+    await page.mouse.down();
+    await page.mouse.move(box.x + box.width * 0.3, y, { steps: 8 });
+    await page.mouse.up();
+  };
+  const current = page.locator('.carousel-indicator[aria-current="true"]');
+  await swipe();
+  await expect(current).toHaveAccessibleName('Go to slide 2');
+  await swipe();
+  await expect(current).toHaveAccessibleName('Go to slide 3');
+  await page.getByRole('checkbox', { name: 'loop' }).check();
+  await expect(current).toHaveAccessibleName('Go to slide 1');
+  await swipe();
+  await expect(current).toHaveAccessibleName('Go to slide 2');
+});
+
+test('siri orb controls fit inside their fieldset', async ({ page }) => {
+  await page.goto('./siri-orb/');
+  const controls = page.locator('.siri-orb-controls');
+  await controls.waitFor();
+  const fits = () => controls.evaluate((el) => el.scrollWidth <= el.clientWidth);
+  expect(await fits()).toBe(true);
+  await page.setViewportSize({ height: 844, width: 390 });
+  expect(await fits()).toBe(true);
+});
+
+test.describe('on a touch phone', () => {
+  test.use({ hasTouch: true, isMobile: true, viewport: { height: 844, width: 390 } });
+
+  // iOS zooms the page into any focused field under 16px.
+  test('morph surface field is large enough not to zoom on focus', async ({ page }) => {
+    await page.goto('./morph-surface/');
+    const demo = page.getByTestId('morph-surface-demo');
+    await demo.locator('astro-island:not([ssr])').waitFor({ state: 'attached' });
+    await demo.getByRole('button', { name: 'Ask AI' }).click();
+    const field = demo.getByRole('textbox', { name: 'AI Input' });
+    await expect(field).toBeFocused();
+    await expect(field).toHaveCSS('font-size', '16px');
+  });
 });

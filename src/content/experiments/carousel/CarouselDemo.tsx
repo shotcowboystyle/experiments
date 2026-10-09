@@ -8,7 +8,7 @@ const CarouselDemo = (): React.JSX.Element => {
   const [autoplayDelay, setAutoplayDelay] = useState(3000);
   const [pauseOnHover, setPauseOnHover] = useState(false);
   const [loop, setLoop] = useState(false);
-  const [round, setRound] = useState(false);
+  const [round, setRound] = useState(true);
 
   // Held in state so Carousel's items memo only changes when the count does.
   const [items, setItems] = useState(DEFAULT_ITEMS);

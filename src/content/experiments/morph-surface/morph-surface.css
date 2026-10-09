@@ -122,6 +122,12 @@
   font-size: var(--s-text-sm);
   resize: none;
 
+  /* iOS zooms the page into any field under 16px when it takes focus, and
+     this one takes focus every time the panel opens. */
+  @media (pointer: coarse) {
+    font-size: 16px;
+  }
+
   &::placeholder {
     color: var(--page-muted);
   }

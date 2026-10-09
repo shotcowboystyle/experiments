@@ -24,8 +24,11 @@
   color: var(--hold-tone);
   font-weight: var(--s-font-medium);
   cursor: pointer;
-  /* No scroll or long-press menu stealing the hold on touch. */
+  /* No scroll, selection or long-press menu stealing the hold on touch: a
+     selection on iOS fires pointercancel about 500ms in. Safari before 26
+     only honours the prefixed user-select. */
   touch-action: none;
+  -webkit-user-select: none;
   user-select: none;
   -webkit-touch-callout: none;
   transition-property: background-color, color, box-shadow;

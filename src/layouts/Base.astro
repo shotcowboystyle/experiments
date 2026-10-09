@@ -117,10 +117,32 @@ const { title, description } = Astro.props;
     --page-ink: light-dark(oklch(0.16 0 0), oklch(0.96 0 0));
     --page-muted: light-dark(oklch(0.48 0 0), oklch(0.72 0 0));
     --page-stage: light-dark(oklch(0.975 0 0), oklch(0.21 0 0));
-    /* Gallery tiles and demo stages share one lifted surface: a 6px halo at
-       3%, plus a pure black/white hairline (`--page-edge`) drawn as an
-       outline so it hugs the radius without taking up layout. */
-    --page-halo: 0 0 0 6px color-mix(in oklch, var(--page-ink) 3%, transparent);
+    /* Gallery tiles and demo stages share one lifted surface: in light, a
+       6px halo at 3%; in dark, where a pale halo glows, a deep drop shadow
+       and a faint top highlight. Each layer is transparent in the other
+       scheme, since light-dark() only picks colours. A pure black/white
+       hairline (`--page-edge`) is drawn as an outline so it hugs the radius
+       without taking up layout. */
+    --page-halo:
+      0 0 0 6px light-dark(oklch(0.16 0 0 / 0.03), transparent),
+      0 16px 40px -12px light-dark(transparent, oklch(0 0 0 / 0.7)),
+      inset 0 1px 0 light-dark(transparent, oklch(1 0 0 / 0.05));
+    /* Shift's shadows are 10% black, which vanishes on a dark surface;
+       same geometry, deeper in dark. */
+    --s-shadow-sm: 0 1px 2px 0 light-dark(oklch(0 0 0 / 0.05), oklch(0 0 0 / 0.4));
+    --s-shadow-base:
+      0 1px 3px 0 light-dark(oklch(0 0 0 / 0.1), oklch(0 0 0 / 0.5)),
+      0 1px 2px -1px light-dark(oklch(0 0 0 / 0.1), oklch(0 0 0 / 0.5));
+    --s-shadow-md:
+      0 4px 6px -1px light-dark(oklch(0 0 0 / 0.1), oklch(0 0 0 / 0.5)),
+      0 2px 4px -2px light-dark(oklch(0 0 0 / 0.1), oklch(0 0 0 / 0.5));
+    --s-shadow-lg:
+      0 10px 15px -3px light-dark(oklch(0 0 0 / 0.1), oklch(0 0 0 / 0.55)),
+      0 4px 6px -4px light-dark(oklch(0 0 0 / 0.1), oklch(0 0 0 / 0.55));
+    --s-shadow-xl:
+      0 20px 25px -5px light-dark(oklch(0 0 0 / 0.1), oklch(0 0 0 / 0.6)),
+      0 8px 10px -6px light-dark(oklch(0 0 0 / 0.1), oklch(0 0 0 / 0.6));
+    --s-shadow-2xl: 0 25px 50px -12px light-dark(oklch(0 0 0 / 0.25), oklch(0 0 0 / 0.75));
     --page-edge: 1px solid light-dark(oklch(0 0 0 / 0.1), oklch(1 0 0 / 0.1));
   }
 

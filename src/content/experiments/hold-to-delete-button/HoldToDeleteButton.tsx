@@ -141,6 +141,8 @@ export const HoldToDeleteButton = ({
       data-state={state}
       disabled={disabled}
       onBlur={cancelHold}
+      // A long press opens the context menu on Android, which cancels the pointer.
+      onContextMenu={(event) => event.preventDefault()}
       onKeyDown={(event) => {
         if ((event.key === ' ' || event.key === 'Enter') && !event.repeat) {
           event.preventDefault();

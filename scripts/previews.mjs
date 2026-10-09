@@ -9,7 +9,7 @@ import process from 'node:process';
 
 import { chromium } from '@playwright/test';
 
-const BASE_URL = process.env.PREVIEW_BASE_URL ?? 'http://localhost:4321';
+const BASE_URL = process.env.PREVIEW_BASE_URL ?? 'http://localhost:4321/experiments';
 const OUT_DIR = 'public/experiments/previews';
 // Roughly tile-sized, so the demo reads at its real scale; 2x for retina.
 const SIZE = 440;
@@ -21,6 +21,13 @@ const STAGE = {
     await page.locator('astro-island:not([ssr])').waitFor({ state: 'attached' });
     // The props panel is tuning UI; the poster is the carousel alone.
     await page.addStyleTag({ content: '.demo fieldset { display: none; }' });
+  },
+  // Pins its own light scheme; the toggle is how it goes dark.
+  'css-only-toggle': async (page) => {
+    // The input is visually hidden offscreen, so set it rather than click it.
+    await page.getByRole('checkbox', { name: 'Dark mode' }).evaluate((input) => {
+      input.checked = true;
+    });
   },
   // The stage sets its own clamped block-size, which beats `inset: 0`.
   'cyclic-sentence-circle': async (page) => {
@@ -51,6 +58,8 @@ const STAGE = {
 
 const browser = await chromium.launch();
 const page = await browser.newPage({
+  // Every poster is shot in dark mode; the site follows the OS until the dock picks.
+  colorScheme: 'dark',
   deviceScaleFactor: 2,
   reducedMotion: 'no-preference',
   viewport: { height: SIZE, width: SIZE },
@@ -58,9 +67,9 @@ const page = await browser.newPage({
 
 let slugs = process.argv.slice(2);
 if (slugs.length === 0) {
-  await page.goto(BASE_URL);
+  await page.goto(`${BASE_URL}/`);
   const hrefs = await page.locator('main li a').evaluateAll((links) => links.map((a) => a.getAttribute('href')));
-  slugs = hrefs.map((href) => href.replaceAll('/', ''));
+  slugs = hrefs.map((href) => href.split('/').at(-2));
 }
 
 await mkdir(OUT_DIR, { recursive: true });

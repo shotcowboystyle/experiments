@@ -6,6 +6,8 @@
   justify-items: center;
   gap: var(--s-space-8);
   width: 100%;
+  /* The controls reflow on this width, not the viewport's. */
+  container-type: inline-size;
 }
 
 /* Sized to the largest orb plus its bloom, so dragging the size slider never
@@ -20,8 +22,11 @@
 .siri-orb-controls {
   display: grid;
   gap: var(--s-space-2);
+  /* An explicit track, or the column grows to the colours row's min-content
+     and the controls spill out of the fieldset. */
+  grid-template-columns: minmax(0, 1fr);
   min-inline-size: 0;
-  width: min(100%, 24rem);
+  width: min(100%, 27rem);
   margin: 0;
   padding: var(--s-space-3) var(--s-space-4);
   border: 0;
@@ -40,6 +45,7 @@
   label,
   .siri-orb-swatches {
     display: flex;
+    flex-wrap: wrap;
     align-items: center;
     gap: var(--s-space-2);
   }
@@ -96,5 +102,22 @@
     border: 0;
     border-radius: var(--s-radius-full);
     box-shadow: inset 0 0 0 1px oklch(0 0 0 / 0.1);
+  }
+}
+
+/* Too narrow for a 9rem name column beside a usable slider: names stack
+   above their control. */
+@container (width < 26rem) {
+  .siri-orb-controls label:has([type='range'], select) {
+    grid-template-columns: minmax(0, 1fr) 3.5rem;
+    row-gap: var(--s-space-1);
+
+    & > span {
+      grid-column: 1 / -1;
+    }
+  }
+
+  .siri-orb-swatches > span {
+    width: 100%;
   }
 }
