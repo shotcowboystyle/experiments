@@ -429,8 +429,17 @@ test.describe('on a touch phone', () => {
 test('experiment page carries canonical, social image and author structured data', async ({ page }) => {
   await page.goto('./carousel/');
   await expect(page.locator('link[rel="canonical"]')).toHaveAttribute('href', /\/experiments\/carousel\/$/u);
-  await expect(page.locator('meta[property="og:image"]')).toHaveAttribute('content', /\/previews\/carousel\.jpg$/u);
+  const image = await page.locator('meta[property="og:image"]').getAttribute('content');
+  // One /experiments/ prefix: public/ must not repeat the base folder.
+  expect(new URL(image ?? '').pathname).toBe('/experiments/previews/carousel.jpg');
   const ld = JSON.parse((await page.locator('script[type="application/ld+json"]').textContent()) ?? '{}');
   expect(ld['@type']).toBe('CreativeWork');
   expect(ld.author.name).toBe('Curtis Blanton');
+});
+
+test('index carries a large share image', async ({ page }) => {
+  await page.goto('./');
+  const image = await page.locator('meta[property="og:image"]').getAttribute('content');
+  expect(new URL(image ?? '').pathname).toBe('/experiments/previews/index.jpg');
+  await expect(page.locator('meta[name="twitter:card"]')).toHaveAttribute('content', 'summary_large_image');
 });

@@ -1,5 +1,6 @@
 // Captures a square poster of each experiment's `.demo` stage into
-// public/experiments/previews/<slug>.jpg for the gallery tiles.
+// public/previews/<slug>.jpg for the gallery tiles. A full run also shoots
+// the gallery itself into public/previews/index.jpg, the hub's share image.
 //
 // Usage: start the dev server (`pnpm dev`), then `pnpm previews [slug…]`.
 // The stage is the `.demo`, or a full-bleed experiment's `[data-preview]` root.
@@ -10,7 +11,7 @@ import process from 'node:process';
 import { chromium } from '@playwright/test';
 
 const BASE_URL = process.env.PREVIEW_BASE_URL ?? 'http://localhost:4321/experiments';
-const OUT_DIR = 'public/experiments/previews';
+const OUT_DIR = 'public/previews';
 // Roughly tile-sized, so the demo reads at its real scale; 2x for retina.
 const SIZE = 440;
 
@@ -70,6 +71,16 @@ if (slugs.length === 0) {
   await page.goto(`${BASE_URL}/`);
   const hrefs = await page.locator('main li a').evaluateAll((links) => links.map((a) => a.getAttribute('href')));
   slugs = hrefs.map((href) => href.split('/').at(-2));
+  // The hub's share card: the gallery at the 1.91:1 size share cards expect.
+  await mkdir(OUT_DIR, { recursive: true });
+  await page.setViewportSize({ height: 630, width: 1200 });
+  await page.addStyleTag({ content: 'astro-dev-toolbar { display: none !important; }' });
+  // Only the first row is in frame; offscreen lazy posters never load, so don't wait on them.
+  await page.waitForLoadState('networkidle');
+  await page.waitForTimeout(1200);
+  await page.screenshot({ path: `${OUT_DIR}/index.jpg`, quality: 85, scale: 'css', type: 'jpeg' });
+  console.log(`saved ${OUT_DIR}/index.jpg`);
+  await page.setViewportSize({ height: SIZE, width: SIZE });
 }
 
 await mkdir(OUT_DIR, { recursive: true });

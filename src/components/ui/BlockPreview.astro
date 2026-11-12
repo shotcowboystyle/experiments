@@ -4,7 +4,7 @@
  * frame, so the swap is invisible; the video is only fetched once the card is
  * near the viewport, and only ever plays while it is on screen.
  *
- * Poster and clip are picked up from public/experiments/previews/ at build
+ * Poster and clip are picked up from public/previews/ at build
  * time (`pnpm previews` writes the posters). With no poster the slot renders
  * instead, so an uncaptured experiment still gets a deliberate tile.
  *
@@ -24,7 +24,7 @@ interface Props extends HTMLAttributes<"div"> {
 
 const { slug, class: className, ...rest } = Astro.props;
 
-const previews = path.join(process.cwd(), "public/experiments/previews");
+const previews = path.join(process.cwd(), "public/previews");
 const hasPoster = existsSync(path.join(previews, `${slug}.jpg`));
 const hasClip = hasPoster && existsSync(path.join(previews, `${slug}.mp4`));
 ---
@@ -36,7 +36,7 @@ const hasClip = hasPoster && existsSync(path.join(previews, `${slug}.mp4`));
         alt=""
         decoding="async"
         loading="lazy"
-        src={withBase(`/experiments/previews/${slug}.jpg`)}
+        src={withBase(`/previews/${slug}.jpg`)}
       />
     ) : (
       <span class="block-preview-empty">
@@ -56,7 +56,7 @@ const hasClip = hasPoster && existsSync(path.join(previews, `${slug}.mp4`));
           muted
           playsinline
           preload="none"
-          src={withBase(`/experiments/previews/${slug}.mp4`)}
+          src={withBase(`/previews/${slug}.mp4`)}
         />
       </template>
     )
