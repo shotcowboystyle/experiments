@@ -14,5 +14,15 @@
     "MD036": false,
   },
   "globs": ["**/*.md"],
-  "ignores": [".agents", ".claude/skills", "node_modules", ".fallow", "dist", ".astro", "src/content"],
+  "ignores": [
+    ".agents",
+    ".claude/skills",
+    "node_modules",
+    ".fallow",
+    "dist",
+    ".astro",
+    "src/content",
+    "playwright-report",
+    "test-results",
+  ],
 }
