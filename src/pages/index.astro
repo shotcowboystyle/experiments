@@ -10,7 +10,7 @@ import { withBase } from "~/lib/with-base";
 const experiments = sortByDate(await getCollection("experiments"));
 ---
 
-<Page title={SITE_TITLE}>
+<Page title={SITE_TITLE} image={withBase("/previews/index.jpg")}>
   <ul class="gallery" role="list">
     {
       experiments.map((entry) => (

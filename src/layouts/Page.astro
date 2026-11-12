@@ -8,12 +8,14 @@ interface Props {
   /** Shown as the lede under the title; the site description is only the meta fallback. */
   description?: string;
   backLink?: string;
+  /** Base-relative social image; see Base. */
+  image?: string;
 }
 
-const { title, description, backLink } = Astro.props;
+const { title, description, backLink, image } = Astro.props;
 ---
 
-<Base title={title} description={description}>
+<Base title={title} description={description} image={image}>
   <div class="page">
     <header class="page-header">
       <a class="page-home" href="/">← shotcowboystyle</a>
